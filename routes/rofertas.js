@@ -1,4 +1,4 @@
-module.exports = function (app, swig, gestorBD) {
+module.exports = function (app, swig, gestorBDofertas) {
 
     // Tienda
     app.get("/tienda", function(req, res) {
@@ -10,7 +10,7 @@ module.exports = function (app, swig, gestorBD) {
         if ( req.query.pg == null){ // Puede no venir el param
             pg = 1;
         }
-        gestorBD.obtenerOfertasPg(criterio, pg , function(ofertas, total ) {
+        gestorBDofertas.obtenerOfertasPg(criterio, pg , function(ofertas, total ) {
             if (ofertas == null) {
                 res.send("Error al listar ");
             } else {

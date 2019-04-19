@@ -2,6 +2,15 @@
 var express = require('express');
 var app = express();
 
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Methods", "POST, GET, DELETE, UPDATE, PUT");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, token");
+    // Debemos especificar todas las headers que se aceptan. Content-Type , token
+    next();
+});
+
 var fs = require('fs');
 var https = require('https');
 
@@ -11,15 +20,27 @@ app.use(expressSession({
     resave: true,
     saveUninitialized: true
 }));
+
 var crypto = require('crypto');
+
+var fileUpload = require('express-fileupload');
+app.use(fileUpload());
 
 var mongo = require('mongodb');
 var swig = require('swig')
 
-var gestorBD = require("./modules/gestorBD.js");
-gestorBD.init(app,mongo);
+var bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+var gestorBDusuarios = require("./modules/gestorBDusuarios.js");
+gestorBDusuarios.init(app,mongo);
+
+var gestorBDofertas = require("./modules/gestorBDofertas.js");
+gestorBDofertas.init(app,mongo);
 
 app.use(express.static('public'));
+
 
 // Variables
 app.set('port', 8081);
@@ -29,8 +50,8 @@ app.set('crypto',crypto);
 
 
 // Rutas/controladores por lógica
-require("./routes/rusuario.js")(app, swig, gestorBD);
-require("./routes/rofertas.js")(app, swig, gestorBD);
+require("./routes/rusuario.js")(app, swig, gestorBDusuarios);
+require("./routes/rofertas.js")(app, swig, gestorBDofertas);
 
 
 app.use( function (err, req, res, next ) {
