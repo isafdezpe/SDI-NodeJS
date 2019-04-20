@@ -69,7 +69,17 @@ module.exports = function (app, swig, gestorBDusuarios) {
 
     // Listado de usuarios
     app.get('/usuarios', function (req, res) {
-        var respuesta = swig.renderFile('views/busuarios.html', {});
-        res.send(respuesta);
+        var criterio = {};
+        gestorBDusuarios.obtenerUsuarios(criterio, function (usuarios) {
+            if (usuarios == null) {
+                res.send("Error al listar");
+            } else {
+                var respuesta = swig.renderFile('views/busuarios.html',
+                    {
+                        usuarios : usuarios
+                    });
+                res.send(respuesta);
+            }
+        })
     })
 };

@@ -4,4 +4,25 @@
 
 {% block contenido_principal %}
 <h2>Listado de usuarios</h2>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Email</th>
+            <th>Nombre</th>
+            <th>Apellidos</th>
+        </tr>
+        <tbody>
+        {% for usuario in usuarios %}
+        <tr>
+            <td>{{ usuario.email }}</td>
+            <td>{{ usuario.nombre }}</td>
+            <td>{{ usuario.apellido }}</td>
+            <td><input type="checkbox" class="checkbox" name= "checkbox" value = {{ usuario.email }}></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <button type="submit" id="eliminarUsuarios" class="btn btn-primary">Eliminar seleccionados</button>
+</div>
 {% endblock %}
