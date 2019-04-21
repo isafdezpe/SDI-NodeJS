@@ -12,7 +12,7 @@ module.exports = function (app, swig, gestorBDofertas) {
         }
         gestorBDofertas.obtenerOfertasPg(criterio, pg , function(ofertas, total ) {
             if (ofertas == null) {
-                res.send("Error al listar ");
+                res.redirect("/tienda?mensaje=Error al listar")
             } else {
                 var ultimaPg = total/4;
                 if (total % 4 > 0 ){ // Sobran decimales
@@ -34,4 +34,56 @@ module.exports = function (app, swig, gestorBDofertas) {
             }
         });
     });
+
+    // Ofertas propias
+    app.get('/propias/agregar', function (req, res) {
+        var respuesta = swig.renderFile('views/bagregar.html',
+            {
+            });
+        res.send(respuesta);
+    });
+
+    app.post("/oferta", function(req, res) {
+        var oferta = {
+            nombre : req.body.nombre,
+            descripcion : req.body.descripcion,
+            precio : req.body.precio,
+            autor : req.session.usuario
+        }
+        // Conectarse
+        gestorBDofertas.insertarOferta(oferta, function(id) {
+            if (id == null) {
+                res.redirect("/propias?mensaje=Error al insertar oferta")
+            } else {
+                res.redirect("/propias");
+            }
+        });
+    });
+
+    app.get('/propias/eliminar/:id', function (req, res) {
+        var criterio = {"_id" : gestorBD.mongo.ObjectID(req.params.id) };
+        gestorBDofertas.eliminarOferta(criterio,function(ofertas){
+            if ( ofertas == null ){
+                res.send(respuesta);
+            } else {
+                res.redirect("/propias");
+            }
+        });
+    });
+
+    app.get("/propias", function(req, res) {
+        var criterio = { autor : req.session.usuario };
+        gestorBDofertas.obtenerOfertas(criterio, function(ofertas) {
+            if (ofertas == null) {
+                res.redirect("/propias?mensaje=Error al listar")
+            } else {
+                var respuesta = swig.renderFile('views//bpropias.html',
+                    {
+                        ofertas : ofertas
+                    });
+                res.send(respuesta);
+            }
+        });
+    });
+
 };

@@ -23,9 +23,6 @@ app.use(expressSession({
 
 var crypto = require('crypto');
 
-var fileUpload = require('express-fileupload');
-app.use(fileUpload());
-
 var mongo = require('mongodb');
 var swig = require('swig')
 
@@ -40,6 +37,42 @@ var gestorBDofertas = require("./modules/gestorBDofertas.js");
 gestorBDofertas.init(app,mongo);
 
 app.use(express.static('public'));
+
+
+// RouterUsuarioSession
+var routerUsuarioSession = express.Router();
+routerUsuarioSession.use(function(req, res, next) {
+    console.log("routerUsuarioSession");
+    if ( req.session.usuario ) {
+        // dejamos correr la petición
+        next();
+    } else {
+        console.log("va a : "+req.session.destino)
+        res.redirect("/identificarse");
+    }
+});
+//Aplicar routerUsuarioSession
+app.use("/propias",routerUsuarioSession);
+app.use("/compras",routerUsuarioSession);
+
+//routerUsuarioAutor
+var routerUsuarioAutor = express.Router();
+routerUsuarioAutor.use(function(req, res, next) {
+    console.log("routerUsuarioAutor");
+    var path = require('path');
+    var id = path.basename(req.originalUrl);
+// Cuidado porque req.params no funciona
+// en el router si los params van en la URL.
+    gestorBD.obtenerOfertas(
+        {_id: mongo.ObjectID(id) }, function (ofertas) {
+            console.log(ofertas[0]);
+            if(ofertas[0].autor == req.session.usuario ){
+                next();
+            } else {
+                res.redirect("/tienda");
+            }
+        })
+});
 
 
 // Variables

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block titulo %} Tienda – MyWallapop {% endblock %}
+
+{% block contenido_principal %}
+<h2>Ofertas agregadas</h2>
+<div class="row text-right">
+    <a href="/propias/agregar" class="btn btn-info" role="button">Agregar oferta</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th class="col-md-1"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for oferta in ofertas %}
+        <tr>
+            <td>{{ oferta.nombre }}</td>
+            <td>{{ oferta.descripcion }}</td>
+            <td>{{ oferta.precio }}</td>
+            <td><a href="/propias/eliminar/{{ cancion._id.toString() }}">Eliminar</a><br></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

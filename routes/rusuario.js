@@ -72,7 +72,7 @@ module.exports = function (app, swig, gestorBDusuarios) {
         var criterio = {};
         gestorBDusuarios.obtenerUsuarios(criterio, function (usuarios) {
             if (usuarios == null) {
-                res.send("Error al listar");
+                res.redirect("/usuarios?mensaje=Error al listar")
             } else {
                 var respuesta = swig.renderFile('views/busuarios.html',
                     {
