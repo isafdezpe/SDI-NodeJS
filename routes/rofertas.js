@@ -60,6 +60,21 @@ module.exports = function (app, swig, gestorBDofertas) {
         });
     });
 
+    app.get('/oferta/:id', function (req, res) {
+        var criterio = { "_id" : gestorBDofertas.mongo.ObjectID(req.params.id) };
+        gestorBDofertas.obtenerOfertas(criterio,function(ofertas){
+            if ( ofertas == null ){
+                res.send(respuesta);
+            } else {
+                var respuesta = swig.renderFile('views/boferta.html',
+                    {
+                        oferta : ofertas[0]
+                    });
+                res.send(respuesta);
+            }
+        });
+    });
+
     app.get('/propias/eliminar/:id', function (req, res) {
         var criterio = {"_id" : gestorBD.mongo.ObjectID(req.params.id) };
         gestorBDofertas.eliminarOferta(criterio,function(ofertas){

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block titulo %} Detalles {{ oferta.nombre }} - MyWallapop {% endblock %}
+
+{% block contenido_principal %}
+<h2>{{ oferta.nombre }}</h2>
+<p>{{ oferta.descripcion }}</p>
+<a class="btn btn-primary pull-right"
+   href="/oferta/comprar/{{oferta._id.toString()}}">{{ oferta.precio
+    }} €</a>
+{% endblock %}
