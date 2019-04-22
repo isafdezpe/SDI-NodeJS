@@ -5,7 +5,7 @@
 {% block contenido_principal %}
 <h2>{{ oferta.nombre }}</h2>
 <p>{{ oferta.descripcion }}</p>
+<p>{{ oferta.precio}} €</p>
 <a class="btn btn-primary pull-right"
-   href="/oferta/comprar/{{oferta._id.toString()}}">{{ oferta.precio
-    }} €</a>
+   href="/oferta/comprar/{{oferta._id.toString()}}">Comprar</a>
 {% endblock %}

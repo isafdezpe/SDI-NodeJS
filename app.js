@@ -53,7 +53,8 @@ routerUsuarioSession.use(function(req, res, next) {
 });
 //Aplicar routerUsuarioSession
 app.use("/propias",routerUsuarioSession);
-app.use("/compras",routerUsuarioSession);
+app.use("/compras",routerUsuarioSession)
+app.use("/oferta/comprar",routerUsuarioSession);
 
 //routerUsuarioAutor
 var routerUsuarioAutor = express.Router();
@@ -73,6 +74,8 @@ routerUsuarioAutor.use(function(req, res, next) {
             }
         })
 });
+//Aplicar routerUsuarioAutor
+app.use("/cancion/eliminar",routerUsuarioAutor);
 
 
 // Variables

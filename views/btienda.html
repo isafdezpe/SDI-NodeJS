@@ -39,6 +39,7 @@
         <td><a href="/oferta/{{ oferta._id.toString() }}">{{ oferta.nombre }}</a></td>
         <td>{{ oferta.descripcion }}</td>
         <td>{{ oferta.precio }}</td>
+        <td><a href="/oferta/comprar/{{ oferta._id.toString() }}">Comprar</a></td>
     </tr>
     {% endfor %}
     <!-- Fin del Bloque oferta -->

@@ -60,6 +60,21 @@ module.exports = function (app, swig, gestorBDofertas) {
         });
     });
 
+    app.get('/oferta/comprar/:id', function (req, res) {
+        var ofertaId = gestorBDofertas.mongo.ObjectID(req.params.id);
+        var compra = {
+            usuario : req.session.usuario,
+            ofertaId : ofertaId
+        }
+        gestorBDofertas.insertarCompra(compra ,function(idCompra){
+            if ( idCompra == null ){
+                res.send(respuesta);
+            } else {
+                res.redirect("/compras");
+            }
+        });
+    });
+
     app.get('/oferta/:id', function (req, res) {
         var criterio = { "_id" : gestorBDofertas.mongo.ObjectID(req.params.id) };
         gestorBDofertas.obtenerOfertas(criterio,function(ofertas){
@@ -97,6 +112,29 @@ module.exports = function (app, swig, gestorBDofertas) {
                         ofertas : ofertas
                     });
                 res.send(respuesta);
+            }
+        });
+    });
+
+    // Ofertas compradas
+    app.get('/compras', function (req, res) {
+        var criterio = { "usuario" : req.session.usuario };
+        gestorBDofertas.obtenerCompras(criterio ,function(compras){
+            if (compras == null) {
+                res.redirect("/compras?mensaje=Error al listar")
+            } else {
+                var ofertasCompradasIds = [];
+                for(i=0; i < compras.length; i++){
+                    ofertasCompradasIds.push( compras[i].ofertaId );
+                }
+                var criterio = { "_id" : { $in: ofertasCompradasIds } }
+                gestorBDofertas.obtenerOfertas(criterio ,function(ofertas){
+                    var respuesta = swig.renderFile('views/bcompras.html',
+                        {
+                            ofertas : ofertas
+                        });
+                    res.send(respuesta);
+                });
             }
         });
     });
