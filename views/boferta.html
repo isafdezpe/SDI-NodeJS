@@ -6,6 +6,7 @@
 <h2>{{ oferta.nombre }}</h2>
 <p>{{ oferta.descripcion }}</p>
 <p>{{ oferta.precio}} €</p>
+<!-- Comprobar que la oferta no está vendida -->
 <a class="btn btn-primary pull-right"
-   href="/oferta/comprar/{{oferta._id.toString()}}">Comprar</a>
+      href="/oferta/comprar/{{oferta._id.toString()}}">Comprar</a>
 {% endblock %}

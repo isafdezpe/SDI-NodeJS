@@ -38,7 +38,8 @@
     <tr>
         <td><a href="/oferta/{{ oferta._id.toString() }}">{{ oferta.nombre }}</a></td>
         <td>{{ oferta.descripcion }}</td>
-        <td>{{ oferta.precio }}</td>
+        <td>{{ oferta.precio }}
+        <!-- Comprobar que la oferta no está vendida -->
         <td><a href="/oferta/comprar/{{ oferta._id.toString() }}">Comprar</a></td>
     </tr>
     {% endfor %}

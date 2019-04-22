@@ -66,6 +66,7 @@ module.exports = function (app, swig, gestorBDofertas) {
             usuario : req.session.usuario,
             ofertaId : ofertaId
         }
+        //TODO: comprobar que el saldo del usuario es >= que el precio de la oferta
         gestorBDofertas.insertarCompra(compra ,function(idCompra){
             if ( idCompra == null ){
                 res.send(respuesta);
