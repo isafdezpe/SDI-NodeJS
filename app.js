@@ -36,6 +36,9 @@ gestorBDusuarios.init(app,mongo);
 var gestorBDofertas = require("./modules/gestorBDofertas.js");
 gestorBDofertas.init(app,mongo);
 
+var gestorVistas = require("./modules/gestorVistas");
+gestorVistas.init(swig);
+
 app.use(express.static('public'));
 
 
@@ -86,8 +89,8 @@ app.set('crypto',crypto);
 
 
 // Rutas/controladores por lógica
-require("./routes/rusuario.js")(app, swig, gestorBDusuarios);
-require("./routes/rofertas.js")(app, swig, gestorBDofertas);
+require("./routes/rusuario.js")(app, swig, gestorBDusuarios, gestorVistas);
+require("./routes/rofertas.js")(app, swig, gestorBDofertas, gestorVistas);
 
 
 app.use( function (err, req, res, next ) {

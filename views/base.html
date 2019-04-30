@@ -28,12 +28,19 @@
         <li id="mTienda" class="active"><a href="/tienda">Tienda</a></li>
         <li id="mOfertasPropias"><a href="/propias">Ofertas propias</a></li>
         <li id="mCompras"><a href="/compras">Compras</a></li>
+        {% if rol == "admin" %}
         <li id="mUsuarios"><a href="/usuarios">Gestión de usuarios</a></li>
+        {% endif %}
       </ul>
       <ul class="nav navbar-nav navbar-right">
+        {% if email == null %}
 	    <li><a href="/registrarse"><span class="glyphicon glyphicon-user"></span> Registrate</a></li>
         <li><a href="/identificarse"><span class="glyphicon glyphicon-log-in"></span> Identifícate</a></li>
+        {% endif %}
+        {% if email != null %}
+        <li><a href="/propias">{{ email }} : {{ saldo }} €</a></li>
         <li><a href="/desconectarse"><span class="glyphicon glyphicon-log-in"></span> Cerrar sesión</a></li>
+        {% endif %}
       </ul>
     </div>
   </div>

@@ -1,4 +1,4 @@
-module.exports = function (app, swig, gestorBDusuarios) {
+module.exports = function (app, swig, gestorBDusuarios, gestorVistas) {
 
     // Registrarse como usuario
     app.get("/registrarse", function(req, res) {
@@ -20,7 +20,7 @@ module.exports = function (app, swig, gestorBDusuarios) {
             apellido : req.body.apellido,
             password : seguro,
             saldo : 100,
-            isAdmin : false
+            rol : 'standard',
         }
 
         gestorBDusuarios.insertarUsuario(usuario, function(id) {
@@ -53,10 +53,18 @@ module.exports = function (app, swig, gestorBDusuarios) {
                     "&tipoMensaje=alert-danger ");
             } else {
                 req.session.usuario = usuarios[0].email;
-                if (usuarios[0].isAdmin)
-                    res.redirect("/usuarios");
-                else
-                    res.redirect("/tienda");
+                if (usuarios[0].rol === 'admin') {
+                    var variables = {"email" : usuarios[0].email, "rol" : "admin", "saldo" : usuarios[0].saldo};
+                    //var respuesta = swig.renderFile('views/busuarios.html', variables);
+                    //res.send(respuesta);
+                    res.redirect('/usuarios');
+                }
+                else {
+                    var variables = {"email" : usuarios[0].email, "rol" : "standard", "saldo" : usuarios[0].saldo};
+                    //var respuesta = swig.renderFile('views/btienda.html', variables);
+                    //res.send(respuesta);
+                    res.redirect('/tienda');
+                }
             }
         });
     });
@@ -68,14 +76,17 @@ module.exports = function (app, swig, gestorBDusuarios) {
     });
 
     // Listado de usuarios
-    app.get('/usuarios', function (req, res) {
+    app.get('/usuarios',  function (req, res) {
         var criterio = {};
         gestorBDusuarios.obtenerUsuarios(criterio, function (usuarios) {
             if (usuarios == null) {
-                res.redirect("/usuarios?mensaje=Error al listar")
+                res.send("/base?mensaje=Error al listar")
             } else {
                 var respuesta = swig.renderFile('views/busuarios.html',
                     {
+                        email : "admin@email.com",
+                        rol : "admin",
+                        saldo : "",
                         usuarios : usuarios
                     });
                 res.send(respuesta);
