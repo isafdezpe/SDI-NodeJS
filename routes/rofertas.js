@@ -1,10 +1,10 @@
-module.exports = function (app, swig, gestorBDofertas) {
+module.exports = function (app, swig, gestorBDofertas, gestorBDusuarios) {
 
     // Tienda
     app.get("/tienda", function(req, res) {
-        var criterio = {};
+        var criterio = { "autor" : {$ne:req.session.usuario} };
         if( req.query.busqueda != null ){
-            criterio = { "nombre" :  {$regex : ".*"+req.query.busqueda+".*", '$options': 'i'} };
+            criterio = { "autor" : {$ne:req.session.usuario}, "nombre" :  {$regex : ".*"+req.query.busqueda+".*", '$options': 'i'} };
         }
         var pg = parseInt(req.query.pg); // Es String !!!
         if ( req.query.pg == null){ // Puede no venir el param
@@ -12,7 +12,7 @@ module.exports = function (app, swig, gestorBDofertas) {
         }
         gestorBDofertas.obtenerOfertasPg(criterio, pg , function(ofertas, total ) {
             if (ofertas == null) {
-                res.redirect("/tienda?mensaje=Error al listar")
+                res.send("Error al listar")
             } else {
                 var ultimaPg = total/4;
                 if (total % 4 > 0 ){ // Sobran decimales
@@ -26,6 +26,7 @@ module.exports = function (app, swig, gestorBDofertas) {
                 }
                 var respuesta = swig.renderFile('views/btienda.html',
                     {
+                        usuario : req.session.usuario,
                         ofertas : ofertas,
                         paginas : paginas,
                         actual : pg
@@ -39,6 +40,7 @@ module.exports = function (app, swig, gestorBDofertas) {
     app.get('/propias/agregar', function (req, res) {
         var respuesta = swig.renderFile('views/bagregar.html',
             {
+                usuario : req.session.usuario,
             });
         res.send(respuesta);
     });
@@ -48,7 +50,8 @@ module.exports = function (app, swig, gestorBDofertas) {
             nombre : req.body.nombre,
             descripcion : req.body.descripcion,
             precio : req.body.precio,
-            autor : req.session.usuario
+            autor : req.session.usuario,
+            vendida : false,
         }
         // Conectarse
         gestorBDofertas.insertarOferta(oferta, function(id) {
@@ -61,19 +64,35 @@ module.exports = function (app, swig, gestorBDofertas) {
     });
 
     app.get('/oferta/comprar/:id', function (req, res) {
-        var ofertaId = gestorBDofertas.mongo.ObjectID(req.params.id);
-        var compra = {
-            usuario : req.session.usuario,
-            ofertaId : ofertaId
-        }
-        //TODO: comprobar que el saldo del usuario es >= que el precio de la oferta
-        gestorBDofertas.insertarCompra(compra ,function(idCompra){
-            if ( idCompra == null ){
-                res.send(respuesta);
-            } else {
-                res.redirect("/compras");
+        var criterioOferta = { "_id" : req.params.id };
+        var usuario = req.session.usuario;
+        var criterioUsuario = { "email" : usuario.email};
+        gestorBDofertas.obtenerOfertas(criterioOferta, function (ofertas) {
+            if (ofertas == null)
+                res.redirect("/tienda?mensaje=Error al comprar")
+            else {
+                if (usuario.saldo >= ofertas[0].precio){
+                    ofertas[0].vendida = true;
+                    ofertas[0].comprador = req.session.usuario;
+                    usuario.saldo -= ofertas[0].precio;
+                    gestorBDofertas.actualizarOferta(criterioOferta, ofertas[0], function (id) {
+                        if (id == null)
+                            res.redirect("/tienda?mensaje=Error al comprar")
+                        else {
+                            gestorBDusuarios.actualizarUsuario(criterioUsuario, usuario, function (id) {
+                                if (id == null)
+                                    res.redirect("/tienda?mensaje=Error al comprar")
+                                else
+                                    res.redirect("/compras");
+                            })
+
+                        }
+                    })
+                }
             }
         });
+
+
     });
 
     app.get('/oferta/:id', function (req, res) {
@@ -84,6 +103,7 @@ module.exports = function (app, swig, gestorBDofertas) {
             } else {
                 var respuesta = swig.renderFile('views/boferta.html',
                     {
+                        usuario : req.session.usuario,
                         oferta : ofertas[0]
                     });
                 res.send(respuesta);
@@ -92,7 +112,7 @@ module.exports = function (app, swig, gestorBDofertas) {
     });
 
     app.get('/propias/eliminar/:id', function (req, res) {
-        var criterio = {"_id" : gestorBD.mongo.ObjectID(req.params.id) };
+        var criterio = {"_id" : gestorBDofertas.mongo.ObjectID(req.params.id) };
         gestorBDofertas.eliminarOferta(criterio,function(ofertas){
             if ( ofertas == null ){
                 res.send(respuesta);
@@ -110,6 +130,7 @@ module.exports = function (app, swig, gestorBDofertas) {
             } else {
                 var respuesta = swig.renderFile('views//bpropias.html',
                     {
+                        usuario : req.session.usuario,
                         ofertas : ofertas
                     });
                 res.send(respuesta);
@@ -119,7 +140,7 @@ module.exports = function (app, swig, gestorBDofertas) {
 
     // Ofertas compradas
     app.get('/compras', function (req, res) {
-        var criterio = { "usuario" : req.session.usuario };
+        var criterio = { "comprador" : req.session.usuario };
         gestorBDofertas.obtenerCompras(criterio ,function(compras){
             if (compras == null) {
                 res.redirect("/compras?mensaje=Error al listar")
@@ -132,6 +153,7 @@ module.exports = function (app, swig, gestorBDofertas) {
                 gestorBDofertas.obtenerOfertas(criterio ,function(ofertas){
                     var respuesta = swig.renderFile('views/bcompras.html',
                         {
+                            usuario : req.session.usuario,
                             ofertas : ofertas
                         });
                     res.send(respuesta);

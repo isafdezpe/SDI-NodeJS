@@ -38,9 +38,13 @@
     <tr>
         <td><a href="/oferta/{{ oferta._id.toString() }}">{{ oferta.nombre }}</a></td>
         <td>{{ oferta.descripcion }}</td>
-        <td>{{ oferta.precio }}
-        <!-- Comprobar que la oferta no está vendida -->
+        <td>{{ oferta.precio }}</td>
+        {% if !oferta.vendida %}
         <td><a href="/oferta/comprar/{{ oferta._id.toString() }}">Comprar</a></td>
+        {% endif %}
+        {% if oferta.vendida %}
+        <td>Vendida</td>
+        {% endif %}
     </tr>
     {% endfor %}
     <!-- Fin del Bloque oferta -->

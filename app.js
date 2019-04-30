@@ -24,7 +24,7 @@ app.use(expressSession({
 var crypto = require('crypto');
 
 var mongo = require('mongodb');
-var swig = require('swig')
+var swig = require('swig');
 
 var bodyParser = require('body-parser');
 app.use(bodyParser.json());
@@ -35,9 +35,6 @@ gestorBDusuarios.init(app,mongo);
 
 var gestorBDofertas = require("./modules/gestorBDofertas.js");
 gestorBDofertas.init(app,mongo);
-
-var gestorVistas = require("./modules/gestorVistas");
-gestorVistas.init(swig);
 
 app.use(express.static('public'));
 
@@ -89,8 +86,8 @@ app.set('crypto',crypto);
 
 
 // Rutas/controladores por lógica
-require("./routes/rusuario.js")(app, swig, gestorBDusuarios, gestorVistas);
-require("./routes/rofertas.js")(app, swig, gestorBDofertas, gestorVistas);
+require("./routes/rusuario.js")(app, swig, gestorBDusuarios);
+require("./routes/rofertas.js")(app, swig, gestorBDofertas, gestorBDusuarios);
 
 
 app.use( function (err, req, res, next ) {

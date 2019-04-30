@@ -1,4 +1,4 @@
-module.exports = function (app, swig, gestorBDusuarios, gestorVistas) {
+module.exports = function (app, swig, gestorBDusuarios) {
 
     // Registrarse como usuario
     app.get("/registrarse", function(req, res) {
@@ -52,19 +52,11 @@ module.exports = function (app, swig, gestorBDusuarios, gestorVistas) {
                     "?mensaje=Email o password incorrecto"+
                     "&tipoMensaje=alert-danger ");
             } else {
-                req.session.usuario = usuarios[0].email;
-                if (usuarios[0].rol === 'admin') {
-                    var variables = {"email" : usuarios[0].email, "rol" : "admin", "saldo" : usuarios[0].saldo};
-                    //var respuesta = swig.renderFile('views/busuarios.html', variables);
-                    //res.send(respuesta);
+                req.session.usuario = usuarios[0];
+                if (usuarios[0].rol === 'admin')
                     res.redirect('/usuarios');
-                }
-                else {
-                    var variables = {"email" : usuarios[0].email, "rol" : "standard", "saldo" : usuarios[0].saldo};
-                    //var respuesta = swig.renderFile('views/btienda.html', variables);
-                    //res.send(respuesta);
+                else
                     res.redirect('/tienda');
-                }
             }
         });
     });
@@ -80,13 +72,11 @@ module.exports = function (app, swig, gestorBDusuarios, gestorVistas) {
         var criterio = {};
         gestorBDusuarios.obtenerUsuarios(criterio, function (usuarios) {
             if (usuarios == null) {
-                res.send("/base?mensaje=Error al listar")
+                res.send("Error al listar")
             } else {
                 var respuesta = swig.renderFile('views/busuarios.html',
                     {
-                        email : "admin@email.com",
-                        rol : "admin",
-                        saldo : "",
+                        usuario : req.session.usuario,
                         usuarios : usuarios
                     });
                 res.send(respuesta);
