@@ -64,9 +64,9 @@ module.exports = function (app, swig, gestorBDofertas, gestorBDusuarios) {
     });
 
     app.get('/oferta/comprar/:id', function (req, res) {
-        var criterioOferta = { "_id" : req.params.id };
+        var criterioOferta = { "_id" : gestorBDofertas.mongo.ObjectID(req.params.id) };
         var usuario = req.session.usuario;
-        var criterioUsuario = { "email" : usuario.email};
+        var criterioUsuario = { "_id" : gestorBDusuarios.mongo.ObjectID(usuario.id) };
         gestorBDofertas.obtenerOfertas(criterioOferta, function (ofertas) {
             if (ofertas == null)
                 res.redirect("/tienda?mensaje=Error al comprar")
@@ -126,7 +126,7 @@ module.exports = function (app, swig, gestorBDofertas, gestorBDusuarios) {
         var criterio = { autor : req.session.usuario };
         gestorBDofertas.obtenerOfertas(criterio, function(ofertas) {
             if (ofertas == null) {
-                res.redirect("/propias?mensaje=Error al listar")
+                res.send("Error al listar")
             } else {
                 var respuesta = swig.renderFile('views//bpropias.html',
                     {
@@ -140,24 +140,17 @@ module.exports = function (app, swig, gestorBDofertas, gestorBDusuarios) {
 
     // Ofertas compradas
     app.get('/compras', function (req, res) {
-        var criterio = { "comprador" : req.session.usuario };
-        gestorBDofertas.obtenerCompras(criterio ,function(compras){
-            if (compras == null) {
-                res.redirect("/compras?mensaje=Error al listar")
+        var criterio = { comprador : req.session.usuario };
+        gestorBDofertas.obtenerOfertas(criterio ,function(ofertas){
+            if (ofertas == null) {
+                res.send("Error al listar")
             } else {
-                var ofertasCompradasIds = [];
-                for(i=0; i < compras.length; i++){
-                    ofertasCompradasIds.push( compras[i].ofertaId );
-                }
-                var criterio = { "_id" : { $in: ofertasCompradasIds } }
-                gestorBDofertas.obtenerOfertas(criterio ,function(ofertas){
-                    var respuesta = swig.renderFile('views/bcompras.html',
-                        {
-                            usuario : req.session.usuario,
-                            ofertas : ofertas
-                        });
-                    res.send(respuesta);
-                });
+                var respuesta = swig.renderFile('views/bcompras.html',
+                    {
+                        usuario : req.session.usuario,
+                        ofertas : ofertas,
+                    });
+                res.send(respuesta);
             }
         });
     });
