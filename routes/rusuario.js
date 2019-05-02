@@ -85,15 +85,23 @@ module.exports = function (app, swig, gestorBDusuarios) {
     })
 
     app.post("/usuarios/eliminar", function (req, res) {
-        var emails = req.body.cb-email;
+        var emails = req.body.cbemail;
+        if (!emails)
+            res.redirect("/usuarios");
+
         if (!Array.isArray(emails)) {
             var aux = emails;
             emails = [];
             emails.push(aux);
         }
-        var criterio = {email: req.body.email};
-        var criterioEliminar = {valid: false};
-         gestorBDusuarios.eliminarUsuarios(criterio, criterioEliminar, function (usuarios) {
+
+        let criterio = {
+            email: {
+                $in: emails
+            }
+        }
+
+         gestorBDusuarios.eliminarUsuarios(criterio, function (usuarios) {
                 if (usuarios === null || usuarios.length === 0) {
                     res.redirect("/usuarios?mensaje=Error al eliminar usuarios");
                 } else {

@@ -20,7 +20,7 @@
             <td>{{ usuario.nombre }}</td>
             <td>{{ usuario.apellido }}</td>
             {% if usuario.email != "admin@email.com" %}
-            <td><input type="checkbox" class="checkbox" name= "cb-email" value = {{ usuario.email }}></td>
+            <td><input type="checkbox" class="checkbox" name= "cbemail" value = {{ usuario.email }}></td>
             {% endif %}
         </tr>
         {% endfor %}
