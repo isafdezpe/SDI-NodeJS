@@ -2,6 +2,9 @@
 var express = require('express');
 var app = express();
 
+var jwt = require('jsonwebtoken');
+app.set('jwt', jwt);
+
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Credentials", "true");
@@ -12,7 +15,6 @@ app.use(function(req, res, next) {
 });
 
 var fs = require('fs');
-var https = require('https');
 
 var expressSession = require('express-session');
 app.use(expressSession({
@@ -73,6 +75,7 @@ routerUsuarioToken.use(function(req, res, next) {
 
 // Aplicar routerUsuarioToken
 app.use('/api/tienda', routerUsuarioToken);
+app.use('/api/oferta', routerUsuarioToken);
 
 // RouterUsuarioSession
 var routerUsuarioSession = express.Router();
@@ -124,6 +127,8 @@ app.set('crypto',crypto);
 // Rutas/controladores por lógica
 require("./routes/rusuario.js")(app, swig, gestorBDusuarios);
 require("./routes/rofertas.js")(app, swig, gestorBDofertas, gestorBDusuarios);
+require("./routes/rapiusuarios.js")(app, gestorBDusuarios);
+require("./routes/rapiofertas.js")(app, gestorBDofertas);
 
 
 app.use( function (err, req, res, next ) {
@@ -140,9 +145,6 @@ app.get('/', function (req, res) {
 
 
 // Lanzar el servidor
-https.createServer({
-    key: fs.readFileSync('certificates/alice.key'),
-    cert: fs.readFileSync('certificates/alice.crt')
-}, app).listen(app.get('port'), function() {
+app.listen(app.get('port'), function() {
     console.log("Servidor activo");
 });
