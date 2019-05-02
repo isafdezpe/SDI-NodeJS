@@ -83,4 +83,23 @@ module.exports = function (app, swig, gestorBDusuarios) {
             }
         })
     })
+
+    app.post("/usuarios/eliminar", function (req, res) {
+        var emails = req.body.cb-email;
+        if (!Array.isArray(emails)) {
+            var aux = emails;
+            emails = [];
+            emails.push(aux);
+        }
+        var criterio = {email: req.body.email};
+        var criterioEliminar = {valid: false};
+         gestorBDusuarios.eliminarUsuarios(criterio, criterioEliminar, function (usuarios) {
+                if (usuarios === null || usuarios.length === 0) {
+                    res.redirect("/usuarios?mensaje=Error al eliminar usuarios");
+                } else {
+                    res.redirect("/usuarios");
+                }
+            });
+
+    });
 };

@@ -3,6 +3,7 @@
 {% block titulo %} Listado de usuarios - MyWallapop {% endblock %}
 
 {% block contenido_principal %}
+<form class="container" method="post" action="/usuarios/eliminar">
 <h2>Listado de usuarios</h2>
 <div class="table-responsive">
     <table class="table table-hover">
@@ -19,7 +20,7 @@
             <td>{{ usuario.nombre }}</td>
             <td>{{ usuario.apellido }}</td>
             {% if usuario.email != "admin@email.com" %}
-            <td><input type="checkbox" class="checkbox" name= "checkbox" value = {{ usuario.email }}></td>
+            <td><input type="checkbox" class="checkbox" name= "cb-email" value = {{ usuario.email }}></td>
             {% endif %}
         </tr>
         {% endfor %}
@@ -27,4 +28,5 @@
     </table>
     <button type="submit" id="eliminarUsuarios" class="btn btn-primary">Eliminar seleccionados</button>
 </div>
+</form>
 {% endblock %}
