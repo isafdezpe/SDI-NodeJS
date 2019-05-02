@@ -65,25 +65,30 @@ module.exports = function (app, swig, gestorBDofertas, gestorBDusuarios) {
 
     app.get('/oferta/comprar/:id', function (req, res) {
         var criterioOferta = { "_id" : gestorBDofertas.mongo.ObjectID(req.params.id) };
-        var usuario = req.session.usuario;
-        var criterioUsuario = { "_id" : gestorBDusuarios.mongo.ObjectID(usuario.id) };
+        var criterioUsuario = { "_id" : gestorBDusuarios.mongo.ObjectID(req.session.usuario._id.toString()) };
         gestorBDofertas.obtenerOfertas(criterioOferta, function (ofertas) {
-            if (ofertas == null)
+            if (!ofertas)
                 res.redirect("/tienda?mensaje=Error al comprar")
             else {
-                if (usuario.saldo >= ofertas[0].precio){
+                if (req.session.usuario.saldo >= ofertas[0].precio){
                     ofertas[0].vendida = true;
-                    ofertas[0].comprador = req.session.usuario;
-                    usuario.saldo -= ofertas[0].precio;
+                    ofertas[0].comprador = criterioUsuario._id;
                     gestorBDofertas.actualizarOferta(criterioOferta, ofertas[0], function (id) {
-                        if (id == null)
+
+                        if (!id)
                             res.redirect("/tienda?mensaje=Error al comprar")
                         else {
-                            gestorBDusuarios.actualizarUsuario(criterioUsuario, usuario, function (id) {
+                            console.log(id.nModified);
+                            req.session.usuario.saldo -= ofertas[0].precio;
+                            let user = req.session.usuario;
+                            delete user._id;
+                            gestorBDusuarios.actualizarUsuario(criterioUsuario, user , function (id) {
                                 if (id == null)
-                                    res.redirect("/tienda?mensaje=Error al comprar")
-                                else
+                                    res.redirect("/tienda?mensaje=Error al actualizar el usuario")
+                                else {
                                     res.redirect("/compras");
+                                }
+
                             })
 
                         }
@@ -140,7 +145,7 @@ module.exports = function (app, swig, gestorBDofertas, gestorBDusuarios) {
 
     // Ofertas compradas
     app.get('/compras', function (req, res) {
-        var criterio = { comprador : req.session.usuario };
+        var criterio = { comprador :gestorBDusuarios.mongo.ObjectId(req.session.usuario._id.toString()) };
         gestorBDofertas.obtenerOfertas(criterio ,function(ofertas){
             if (ofertas == null) {
                 res.send("Error al listar")
