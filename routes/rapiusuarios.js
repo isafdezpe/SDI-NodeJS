@@ -16,7 +16,7 @@ module.exports = function (app, gestorBDusuarios) {
                 })
             } else {
                 var token = app.get('jwt').sign(
-                    {usuario: criterio.email , tiempo: Date.now()/1000},
+                    {usuario: usuarios[0] , tiempo: Date.now()/1000},
                     "secreto");
 
                 res.status(200);

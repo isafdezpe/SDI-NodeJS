@@ -80,7 +80,8 @@ routerUsuarioToken.use(function(req, res, next) {
 app.use('/api/tienda', routerUsuarioToken);
 app.use('/api/oferta', routerUsuarioToken);
 app.use('/api/mensaje', routerUsuarioToken);
-app.use('/api/chat', routerUsuarioToken);
+app.use('/api/conversacion/*', routerUsuarioToken);
+app.use('/api/conversaciones', routerUsuarioToken);
 
 // RouterUsuarioSession
 var routerUsuarioSession = express.Router();
@@ -133,7 +134,7 @@ app.set('crypto',crypto);
 require("./routes/rusuario.js")(app, swig, gestorBDusuarios);
 require("./routes/rofertas.js")(app, swig, gestorBDofertas, gestorBDusuarios);
 require("./routes/rapiusuarios.js")(app, gestorBDusuarios);
-require("./routes/rapiofertas.js")(app, gestorBDofertas, gestorBDmensajes);
+require("./routes/rapiofertas.js")(app, gestorBDofertas, gestorBDmensajes, gestorBDusuarios);
 
 
 app.use( function (err, req, res, next ) {
