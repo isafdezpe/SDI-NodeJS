@@ -1,30 +1,95 @@
 <div id="widget-mensajes">
-    <h2>Mensajes</h2>
-    <div id="conversacion"></div>
-    <div>
-        <input id="mensajeAenviar" type="text" class="form-control" placeholder="Escriba su mensaje" name="textoMensaje"/>
-        <button id="enviar" class="btn btn-primary">Enviar</button>
-    </div>
-
-    <button onclick="widgetTienda()" class="btn" >Volver</button>
+    <div id="chatbox"></div>
+    <form name="message" action="">
+        <input name="usermsg" type="text" id="mensajeAenviar" size="63" />
+        <input name="submitmsg" type="submit"  id="enviar" value="Enviar" />
+    </form>
 </div>
+<style>
+    body {
+        font:12px arial;
+        color: #222;
+        text-align:center;
+        padding:35px; }
+
+    form, p, span {
+        margin:0;
+        padding:0; }
+
+    input { font:12px arial; }
+
+    a {
+        color:#0000FF;
+        text-decoration:none; }
+
+    a:hover { text-decoration:underline; }
+
+    #widget-mensajes {
+        margin:0 auto;
+        padding-bottom:25px;
+        background:#EBF4FB;
+        width:504px;
+        border:1px solid #ACD8F0; }
+
+
+    #chatbox {
+        text-align:left;
+        margin:0 auto;
+        margin-bottom:25px;
+        padding:10px;
+        background:#fff;
+        height:270px;
+        width:430px;
+        border:1px solid #ACD8F0;
+        overflow:auto; }
+
+    #usermsg {
+        width:395px;
+        border:1px solid #ACD8F0; }
+
+    #submit { width: 60px; }
+
+    .msgln { margin:0 0 2px 0; }
+</style>
 
 <script>
     window.history.pushState("", "", "/cliente.html?w=chat");
+
+
+
+    function cargar() {
+        $.ajax({
+            url: URLbase + "/conversacion/" + Cookies.get('idOferta') ,
+            type: "GET",
+            dataType: 'json',
+            data:{},
+            headers: {
+                token : token
+            },
+            success: function(respuesta) {
+                cargarChat(respuesta);
+            },
+            error : function (error){
+                $( "#contenedor-principal" ).load("widget-login.html");
+            }
+        })
+    }
+
     $("#enviar").click(function () {
-        $ajax({
-            url: URLbase + "/mensaje/" + idOfertaSeleccionada,
+        $.ajax({
+            url: URLbase + "/mensaje" ,
             type: "POST",
             data: {
-                mensaje: $("#mensajeAenviar").textContent,
-                receptor: Cookies.get('destinatario')
+                mensaje: $("#mensajeAenviar").val(),
+                receptor: Cookies.get('destinatario'),
+                idOferta: Cookies.get('idOferta')
             },
             dataType: 'json',
             headers: {
                 token : token
             },
             success: function(respuesta) {
-                cargarChat();
+                cargar();
             },
             error : function (error){
                 $( "#contenedor-principal" ).load("widget-login.html");
@@ -32,7 +97,18 @@
         })
     });
     
-    function cargarChat() {
-        
+    function cargarChat(mensajes) {
+        $("#chatbox").empty();
+        for (let i = 0; i < mensajes.length; i++) {
+            $("#chatbox").append(
+                "<div id='emisor'>"+mensajes[i].emisor+"</div>"+
+                "<div id='mensaje'>"+mensajes[i].mensaje+"</div>"
+            );
+        }
     }
+
+    $(function () {
+        cargar();
+    })
+    //# sourceURL=mensajes.js
 </script>
