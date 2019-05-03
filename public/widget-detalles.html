@@ -20,10 +20,11 @@
                    placeholder="2.50" id="detalles-precio" readonly/>
         </div>
     </div>
-    <button onclick="widgetOfertas()" class="btn" >Volver</button>
+    <button onclick="widgetTienda()" class="btn" >Volver</button>
 </div>
 
 <script>
+    window.history.pushState("", "", "/cliente.html?w=detalles");
     $.ajax({
         url : URLbase + "/oferta/" + idOfertaSeleccionada ,
         type : "GET",

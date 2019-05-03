@@ -1,0 +1,38 @@
+<div id="widget-mensajes">
+    <h2>Mensajes</h2>
+    <div id="conversacion"></div>
+    <div>
+        <input id="mensajeAenviar" type="text" class="form-control" placeholder="Escriba su mensaje" name="textoMensaje"/>
+        <button id="enviar" class="btn btn-primary">Enviar</button>
+    </div>
+
+    <button onclick="widgetTienda()" class="btn" >Volver</button>
+</div>
+
+<script>
+    window.history.pushState("", "", "/cliente.html?w=chat");
+    $("#enviar").click(function () {
+        $ajax({
+            url: URLbase + "/mensaje/" + idOfertaSeleccionada,
+            type: "POST",
+            data: {
+                mensaje: $("#mensajeAenviar").textContent,
+                receptor: Cookies.get('destinatario')
+            },
+            dataType: 'json',
+            headers: {
+                token : token
+            },
+            success: function(respuesta) {
+                cargarChat();
+            },
+            error : function (error){
+                $( "#contenedor-principal" ).load("widget-login.html");
+            }
+        })
+    });
+    
+    function cargarChat() {
+        
+    }
+</script>
