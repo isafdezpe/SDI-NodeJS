@@ -51,6 +51,7 @@ module.exports = function (app, swig, gestorBDofertas, gestorBDusuarios) {
             descripcion : req.body.descripcion,
             precio : req.body.precio,
             autor : req.session.usuario,
+            fecha: moment().format('dddd, MMMM Do YYYY, h:mm:ss a'),
             vendida : false,
         }
         // Conectarse

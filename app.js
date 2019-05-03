@@ -38,6 +38,9 @@ gestorBDusuarios.init(app,mongo);
 var gestorBDofertas = require("./modules/gestorBDofertas.js");
 gestorBDofertas.init(app,mongo);
 
+var gestorBDmensajes = require("./modules/gestorBDmensajes");
+gestorBDmensajes.init(app,mongo);
+
 app.use(express.static('public'));
 
 // routerUsuarioToken
@@ -76,6 +79,8 @@ routerUsuarioToken.use(function(req, res, next) {
 // Aplicar routerUsuarioToken
 app.use('/api/tienda', routerUsuarioToken);
 app.use('/api/oferta', routerUsuarioToken);
+app.use('/api/mensaje', routerUsuarioToken);
+app.use('/api/chat', routerUsuarioToken);
 
 // RouterUsuarioSession
 var routerUsuarioSession = express.Router();
@@ -128,7 +133,7 @@ app.set('crypto',crypto);
 require("./routes/rusuario.js")(app, swig, gestorBDusuarios);
 require("./routes/rofertas.js")(app, swig, gestorBDofertas, gestorBDusuarios);
 require("./routes/rapiusuarios.js")(app, gestorBDusuarios);
-require("./routes/rapiofertas.js")(app, gestorBDofertas);
+require("./routes/rapiofertas.js")(app, gestorBDofertas, gestorBDmensajes);
 
 
 app.use( function (err, req, res, next ) {
