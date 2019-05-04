@@ -27,7 +27,24 @@ module.exports = function (app, swig, gestorBDusuarios) {
             if (id == null){
                 res.redirect("/registrarse?mensaje=Error al registrar usuario")
             } else {
-                res.redirect("/identificarse?mensaje=Nuevo usuario registrado");
+                var criterio = {
+                    email : req.body.email,
+                    password : seguro
+                }
+                gestorBDusuarios.obtenerUsuarios(criterio, function(usuarios) {
+                    if (usuarios == null || usuarios.length == 0) {
+                        req.session.usuario = null;
+                        res.redirect("/identificarse" +
+                            "?mensaje=Email o password incorrecto"+
+                            "&tipoMensaje=alert-danger ");
+                    } else {
+                        req.session.usuario = usuarios[0];
+                        if (usuarios[0].rol === 'admin')
+                            res.redirect('/usuarios');
+                        else
+                            res.redirect('/tienda');
+                    }
+                });
             }
         });
     });
