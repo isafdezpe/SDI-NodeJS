@@ -2,9 +2,15 @@ module.exports = function (app, swig, gestorBDofertas, gestorBDusuarios) {
 
     // Tienda
     app.get("/tienda", function(req, res) {
-        var criterio = { "autor" : {$ne:req.session.usuario} };
-        if( req.query.busqueda != null ){
-            criterio = { "autor" : {$ne:req.session.usuario}, "nombre" :  {$regex : ".*"+req.query.busqueda+".*", '$options': 'i'} };
+        var criterio = {};
+        if (req.session.usuario)    {
+            criterio = { "autor" : {$ne:gestorBDusuarios.mongo.ObjectID(req.session.usuario._id.toString())} };
+            if( req.query.busqueda != null ){
+                criterio = { "autor" : {$ne:gestorBDusuarios.mongo.ObjectID(req.session.usuario._id.toString())}, "nombre" :  {$regex : ".*"+req.query.busqueda+".*", '$options': 'i'} };
+        }} else {
+            if (req.query.busqueda != null) {
+                criterio = {"nombre": {$regex: ".*" + req.query.busqueda + ".*", '$options': 'i'}};
+            }
         }
         var pg = parseInt(req.query.pg); // Es String !!!
         if ( req.query.pg == null){ // Puede no venir el param
@@ -53,9 +59,9 @@ module.exports = function (app, swig, gestorBDofertas, gestorBDusuarios) {
             nombre : req.body.nombre,
             descripcion : req.body.descripcion,
             precio : req.body.precio,
-            autor : req.session.usuario,
-            fecha: new Date(),
-            vendida : false,
+            autor : gestorBDusuarios.mongo.ObjectID(req.session.usuario._id.toString()),
+            fecha : new Date(),
+            vendida : false
         }
         // Conectarse
         gestorBDofertas.insertarOferta(oferta, function(id) {
@@ -86,9 +92,8 @@ module.exports = function (app, swig, gestorBDofertas, gestorBDusuarios) {
                             app.get("logger").error("Error al comprar oferta");
                             res.redirect("/tienda?mensaje=Error al comprar")
                         }else {
-                            console.log(id.nModified);
                             req.session.usuario.saldo -= ofertas[0].precio;
-                            let user = req.session.usuario;
+                            var user = req.session.usuario;
                             delete user._id;
                             gestorBDusuarios.actualizarUsuario(criterioUsuario, user , function (id) {
                                 if (id == null) {
@@ -103,6 +108,8 @@ module.exports = function (app, swig, gestorBDofertas, gestorBDusuarios) {
 
                         }
                     })
+                } else {
+                    res.redirect("/tienda?mensaje=Saldo insuficiente");
                 }
             }
         });
@@ -142,7 +149,7 @@ module.exports = function (app, swig, gestorBDofertas, gestorBDusuarios) {
     });
 
     app.get("/propias", function(req, res) {
-        var criterio = { autor : req.session.usuario };
+        var criterio = { autor : gestorBDusuarios.mongo.ObjectID(req.session.usuario._id.toString()) };
         gestorBDofertas.obtenerOfertas(criterio, function(ofertas) {
             if (ofertas == null) {
                 app.get("logger").error("Error al mostrar ofertas propias");
