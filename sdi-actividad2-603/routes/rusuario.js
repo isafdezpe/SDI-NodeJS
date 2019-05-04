@@ -13,7 +13,7 @@ module.exports = function (app, swig, gestorBDusuarios) {
             res.redirect("/registrarse?mensaje=Las contraseñas no coinciden");
             return;
         }
-        gestorBDusuarios.obtenerUsuarios(req.body.email, function(usuariosExistentes) {
+        gestorBDusuarios.obtenerUsuarios({email: req.body.email}, function(usuariosExistentes) {
             if (usuariosExistentes.length != 0) {
                 app.get("logger").error("Usuario ya registrado");
                 res.redirect("/registrarse?mensaje=El email ya existe");
@@ -105,7 +105,7 @@ module.exports = function (app, swig, gestorBDusuarios) {
 
     // Listado de usuarios
     app.get('/usuarios',  function (req, res) {
-        var criterio = {};
+        var criterio = {email: {$ne:"admin@email.com"}};
         gestorBDusuarios.obtenerUsuarios(criterio, function (usuarios) {
             if (usuarios == null) {
                 app.get("logger").error("Error al listar usuarios");

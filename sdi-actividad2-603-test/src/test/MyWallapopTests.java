@@ -29,9 +29,7 @@ public class MyWallapopTests {
 	static String Geckdriver022 = "C:\\Users\\User\\Google Drive\\universidad\\SDI\\PL-Material\\PL-SDI-Sesión5-material\\geckodriver024win64.exe";
 	
 	static WebDriver driver = getDriver(PathFirefox65, Geckdriver022);
-	static String URLRemota = "http://ec2-3-83-65-177.compute-1.amazonaws.com:8080"; 
-	static String URLLocal = "http://localhost:8080"; 
-	static String URL = URLRemota;
+	static String URL = "http://localhost:8081";
 
 	public static WebDriver getDriver(String PathFirefox, String Geckdriver) {
 		System.setProperty("webdriver.firefox.bin", PathFirefox);
@@ -71,151 +69,164 @@ public class MyWallapopTests {
 		 */
 		@Test
 		public void test01() {
-			PO_HomeView.clickOption(driver, "signup", "class", "btn btn-primary");
+			PO_HomeView.clickOption(driver, "registrarse", "class", "btn btn-primary");
 			PO_RegisterView.fillForm(driver, "joseperez@email.com", "Josefo", "Perez", "77777",
 					"77777");
-			PO_RegisterView.checkKey(driver, "authenticated.message", PO_Properties.getSPANISH() );
+			SeleniumUtils.textoPresentePagina(driver, "joseperez@email.com");
 		}
 		
 		/**
-		 * Registro de Usuario con datos inválidos (email vacío, nombre vacío, apellidos vacíos).
+		 * Registro de Usuario con datos inválidos (email vacío).
 		 */
 		@Test
-		public void test02() {
-			PO_HomeView.clickOption(driver, "signup", "class", "btn btn-primary");
-			PO_RegisterView.fillForm(driver, "", "", "", "77777",
+		public void test02_1() {
+			PO_HomeView.clickOption(driver, "registrarse", "class", "btn btn-primary");
+			PO_RegisterView.fillForm(driver, "", "Josefo", "Perez", "77777",
 					"77777");
-			PO_RegisterView.checkKey(driver, "signup.message", PO_Properties.getSPANISH() );
+			SeleniumUtils.textoPresentePagina(driver, "Registrar usuario");
 		}
 		
 		/**
 		 * Registro de Usuario con datos inválidos (repetición de contraseña inválida).
 		 */
 		@Test
-		public void test03() {
-			PO_HomeView.clickOption(driver, "signup", "class", "btn btn-primary");
+		public void test02_2() {
+			PO_HomeView.clickOption(driver, "registrarse", "class", "btn btn-primary");
 			PO_RegisterView.fillForm(driver, "joseperez@email.com", "Josefo", "Perez", "77777",
 					"77778");
-			PO_RegisterView.checkKey(driver, "Error.signup.passwordConfirm.coincidence", PO_Properties.getSPANISH() );
+			SeleniumUtils.textoPresentePagina(driver, "Las contraseñas no coinciden");
 		}
 		
 		/**
 		 * Registro de Usuario con datos inválidos (email existente).
 		 */
 		@Test
-		public void test04() {
-			PO_HomeView.clickOption(driver, "signup", "class", "btn btn-primary");
-			PO_RegisterView.fillForm(driver, "pedrod@email.com", "Pedro", "Díaz", "123456",
+		public void test03() {
+			PO_HomeView.clickOption(driver, "registrarse", "class", "btn btn-primary");
+			PO_RegisterView.fillForm(driver, "isabelf@email.com", "Isabel", "Fernandez", "123456",
 					"123456");
-			PO_RegisterView.checkKey(driver, "Error.signup.mail.duplicate", PO_Properties.getSPANISH() );
+			SeleniumUtils.textoPresentePagina(driver, "El email ya existe");
 		}
 		
 		/**
 		 * Inicio de sesión con datos válidos (administrador).
 		 */
 		@Test
-		public void test05() {
-			PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+		public void test04_1() {
+			PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
 			PO_LoginView.fillForm(driver, "admin@email.com" , "admin" );
-			PO_View.checkKey(driver, "users.administration", PO_Properties.getSPANISH() );
+			SeleniumUtils.textoPresentePagina(driver, "Listado de usuarios");
+			SeleniumUtils.textoPresentePagina(driver, "admin@email.com");
+			SeleniumUtils.textoPresentePagina(driver, "Cerrar sesión");
 		}
 		
 		/**
 		 * Inicio de sesión con datos válidos (usuario estándar).
 		 */
 		@Test
-		public void test06() {
-			PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-			PO_LoginView.fillForm(driver, "pedrod@email.com" , "123456" );
-			PO_View.checkKey(driver, "offers.administration", PO_Properties.getSPANISH() );
+		public void test04_2() {
+			PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+			PO_LoginView.fillForm(driver, "isabelf@email.com" , "123456" );
+			SeleniumUtils.textoPresentePagina(driver, "Cerrar sesión");
+			SeleniumUtils.textoPresentePagina(driver, "isabelf@email.com");
 		}
 		
 		/**
-		 * Inicio de sesión con datos inválidos (usuario estándar, campo email y contraseña vacios).
+		 * Inicio de sesión con datos inválidos (email existente, contraseña incorrecta).
+		 */
+		@Test
+		public void test05() {
+			PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+			PO_LoginView.fillForm(driver, "isabelf@email.com" , "12" );
+			SeleniumUtils.textoPresentePagina(driver, "Identificación de usuario");
+			SeleniumUtils.textoPresentePagina(driver, "Email o password incorrecto");
+		}
+		
+		/**
+		 * Inicio de sesión con datos válidos (email vacio).
+		 */
+		@Test
+		public void test06_01() {
+			PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+			PO_LoginView.fillForm(driver, "" , "123456" );
+			SeleniumUtils.textoPresentePagina(driver, "Identificación de usuario");
+		}
+		
+		/**
+		 * Inicio de sesión con datos válidos (contraseña vacia).
+		 */
+		@Test
+		public void test06_02() {
+			PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+			PO_LoginView.fillForm(driver, "isabelf@email.com" , "" );
+			SeleniumUtils.textoPresentePagina(driver, "Identificación de usuario");
+		}
+		
+		/**
+		 * Inicio de sesión con datos inválidos (email no existente en la aplicación).
 		 */
 		@Test
 		public void test07() {
-			PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-			PO_LoginView.fillForm(driver, "" , "" );
-			PO_LoginView.checkKey(driver, "login.message", PO_Properties.getSPANISH() );
-		}
-		
-		/**
-		 * Inicio de sesión con datos válidos (usuario estándar, email existente, pero contraseña incorrecta).
-		 */
-		@Test
-		public void test08() {
-			PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-			PO_LoginView.fillForm(driver, "pedrod@email.com" , "1234567" );
-			PO_LoginView.checkKey(driver, "login.message", PO_Properties.getSPANISH() );
-		}
-		
-		/**
-		 * Inicio de sesión con datos válidos (usuario estándar, email no existente en la aplicación).
-		 */
-		@Test
-		public void test09() {
-			PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-			PO_LoginView.fillForm(driver, "pedrod@email.com" , "1234567" );
-			PO_LoginView.checkKey(driver, "login.message", PO_Properties.getSPANISH() );
+			PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+			PO_LoginView.fillForm(driver, "pedrod@email.com" , "123456" );
+			SeleniumUtils.textoPresentePagina(driver, "Identificación de usuario");
+			SeleniumUtils.textoPresentePagina(driver, "Email o password incorrecto");
 		}
 		
 		/**
 		 * Hacer click en la opción de salir de sesión y comprobar que se redirige a la página de login
 		 */
 		@Test
-		public void test10() {
-			PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-			PO_LoginView.fillForm(driver, "pedrod@email.com" , "123456" );
-			PO_HomeView.clickOption(driver, "logout", "class", "btn btn-primary");
-			PO_LoginView.checkKey(driver, "login.message", PO_Properties.getSPANISH() );
+		public void test08() {
+			PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+			PO_LoginView.fillForm(driver, "isabelf@email.com" , "123456" );
+			PO_HomeView.clickOption(driver, "desconectarse", "class", "btn btn-primary");
+			SeleniumUtils.textoPresentePagina(driver, "Identificación de usuario");
 		}
 		
 		/**
 		 * Comprobar que el botón cerrar sesión no está visible si el usuario no está autenticado
 		 */
 		@Test
-		public void test11() {
-			PO_LoginView.checkKey(driver, "login.message", PO_Properties.getSPANISH() );
-			SeleniumUtils.EsperaCargaPaginaNoTexto(driver, "logout.message",PO_View.getTimeout() );
+		public void test09() {
+			SeleniumUtils.textoPresentePagina(driver, "Identifícate");
+			SeleniumUtils.textoPresentePagina(driver, "Regístrate");
+			SeleniumUtils.textoNoPresentePagina(driver, "Cerrar sesión");
 		}
 		
 		/**
 		 * Mostrar el listado de usuarios y comprobar que se muestran todos los que existen en el sistema
 		 */
 		@Test
-		public void test12() {
-			PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+		public void test10() {
+			PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
 			PO_LoginView.fillForm(driver, "admin@email.com" , "admin" );
-			PO_View.checkKey(driver, "users.administration", PO_Properties.getSPANISH() );
-			List<WebElement> elementos = PO_View.checkElement(driver, "free",
-				"//li[contains(@id, 'users-menu')]/a");
-			elementos.get(0).click();
-			elementos = PO_View.checkElement(driver, "free", "//a[contains(@href,'user/list')]");
-			elementos.get(0).click();
-			elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
+			SeleniumUtils.textoPresentePagina(driver, "Gestión de usuarios");
+			PO_HomeView.clickOption(driver, "usuarios", "class", "btn btn-primary");
+			List<WebElement> elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
 				"//tbody/tr", PO_View.getTimeout());
-			assertTrue(elementos.size() == 5);
+			assertTrue(elementos.size() == 6);
 		}
 		
 		/**
 		 * Ir a la lista de usuarios, borrar el primer usuario de la lista, comprobar que la lista se actualiza y dicho usuario desaparece.
 		 */
 		@Test
-		public void test13() {
-			PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+		public void test11() {
+			PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
 			PO_LoginView.fillForm(driver, "admin@email.com" , "admin" );
-			PO_View.checkKey(driver, "users.administration", PO_Properties.getSPANISH() );
-			List<WebElement> elementos = PO_View.checkElement(driver, "free","//li[contains(@id, 'users-menu')]/a");
+			SeleniumUtils.textoPresentePagina(driver, "Gestión de usuarios");
+			PO_HomeView.clickOption(driver, "usuarios", "class", "btn btn-primary");
+			List<WebElement> elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
+				"//tbody/tr", PO_View.getTimeout());
+			elementos = SeleniumUtils.EsperaCargaPagina(driver, "class", "checkbox", PO_View.getTimeout());
 			elementos.get(0).click();
-			elementos = PO_View.checkElement(driver, "free", "//a[contains(@href,'user/list')]");
+			elementos = SeleniumUtils.EsperaCargaPagina(driver, "id", "eliminarUsuarios", PO_View.getTimeout());
 			elementos.get(0).click();
-			elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",	"//tbody/tr", PO_View.getTimeout());
-			elementos = SeleniumUtils.EsperaCargaPagina(driver, "class", "eliminar", PO_View.getTimeout());
-			elementos.get(0).click();
-			elementos = SeleniumUtils.EsperaCargaPagina(driver, "class", "eliminar", PO_View.getTimeout());
 
-			assertTrue(elementos.size() == 4);
+			elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
+					"//tbody/tr", PO_View.getTimeout());
+			assertTrue(elementos.size() == 5);
 		}
 		
 
@@ -223,54 +234,53 @@ public class MyWallapopTests {
 		 * Ir a la lista de usuarios, borrar el ultimo usuario de la lista, comprobar que la lista se actualiza y dicho usuario desaparece.
 		 */
 		@Test
-		public void test14() {
-			PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+		public void test12() {
+			PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
 			PO_LoginView.fillForm(driver, "admin@email.com" , "admin" );
-			PO_View.checkKey(driver, "users.administration", PO_Properties.getSPANISH() );
-			List<WebElement> elementos = PO_View.checkElement(driver, "free","//li[contains(@id, 'users-menu')]/a");
-			elementos.get(0).click();
-			elementos = PO_View.checkElement(driver, "free", "//a[contains(@href,'user/list')]");
-			elementos.get(0).click();
-			elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",	"//tbody/tr", PO_View.getTimeout());
-			elementos = SeleniumUtils.EsperaCargaPagina(driver, "class", "eliminar", PO_View.getTimeout());
+			SeleniumUtils.textoPresentePagina(driver, "Gestión de usuarios");
+			PO_HomeView.clickOption(driver, "usuarios", "class", "btn btn-primary");
+			List<WebElement> elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
+				"//tbody/tr", PO_View.getTimeout());
+			elementos = SeleniumUtils.EsperaCargaPagina(driver, "class", "checkbox", PO_View.getTimeout());
 			elementos.get(elementos.size()-1).click();
-			int tam = elementos.size();
-			elementos = SeleniumUtils.EsperaCargaPagina(driver, "class", "eliminar", PO_View.getTimeout());
+			elementos = SeleniumUtils.EsperaCargaPagina(driver, "id", "eliminarUsuarios", PO_View.getTimeout());
+			elementos.get(0).click();
 
-			assertTrue(elementos.size() == tam-1);
+			elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
+					"//tbody/tr", PO_View.getTimeout());
+			assertTrue(elementos.size() == 5);
 		}
 		/**
-		 * Ir a la lista de usuarios, borrar tres usuario de la lista, comprobar que la lista se actualiza y dicho usuario desaparece.
+		 * Ir a la lista de usuarios, borrar tres usuario, comprobar que la lista se actualiza y dichos
+		 *  usuarios desaparecen.
 		 */
 		@Test
-		public void test15() {
-			PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+		public void test13() {
+			PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
 			PO_LoginView.fillForm(driver, "admin@email.com" , "admin" );
-			PO_View.checkKey(driver, "users.administration", PO_Properties.getSPANISH() );
-			List<WebElement> elementos = PO_View.checkElement(driver, "free","//li[contains(@id, 'users-menu')]/a");
-			elementos.get(0).click();
-			elementos = PO_View.checkElement(driver, "free", "//a[contains(@href,'user/list')]");
-			elementos.get(0).click();
-			elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",	"//tbody/tr", PO_View.getTimeout());
+			SeleniumUtils.textoPresentePagina(driver, "Gestión de usuarios");
+			PO_HomeView.clickOption(driver, "usuarios", "class", "btn btn-primary");
+			List<WebElement> elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
+				"//tbody/tr", PO_View.getTimeout());
 			elementos = SeleniumUtils.EsperaCargaPagina(driver, "class", "checkbox", PO_View.getTimeout());
-			int tam = elementos.size();
 			elementos.get(0).click();
-			elementos.get(1).click();
-			elementos.get(2).click();
-			elementos = SeleniumUtils.EsperaCargaPagina(driver, "id", "eliminarVarios", PO_View.getTimeout());
+			elementos.get(3).click();
+			elementos.get(5).click();
+			elementos = SeleniumUtils.EsperaCargaPagina(driver, "id", "eliminarUsuarios", PO_View.getTimeout());
 			elementos.get(0).click();
 			
 			
-			elementos = SeleniumUtils.EsperaCargaPagina(driver, "class", "checkbox", PO_View.getTimeout());
-
-			assertEquals(elementos.size(),tam -3);
+			elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
+					"//tbody/tr", PO_View.getTimeout());
+			assertEquals(elementos.size(), 3);
 		}
 		
 		/**
-		 * Ir al formulario de alta de oferta, rellenarla con datos válidos y pulsar el botón Submit.Comprobar que la oferta sale en el listado de ofertas de dicho usuario
+		 * Ir al formulario de alta de oferta, rellenarla con datos válidos y pulsar el botón Submit.
+		 * Comprobar que la oferta sale en el listado de ofertas de dicho usuario
 		 */
 		@Test
-		public void test16() {
+		public void test14() {
 			PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
 			PO_LoginView.fillForm(driver, "mariarguez@email.com" , "123456" );
 			List<WebElement> elementos = PO_View.checkElement(driver, "id","offers-menu");
