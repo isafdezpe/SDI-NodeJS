@@ -42,8 +42,8 @@ module.exports = function (app, gestorBDofertas, gestorBDmensajes, gestorBDusuar
                 var oferta = ofertas[0];
                 var usuario = res.usuario;
                 var mensaje = {
-                    emisor : gestorBDusuarios.mongo.ObjectID(usuario._id.toString()),
-                    receptor : gestorBDusuarios.mongo.ObjectID(req.body.receptor.toString()),
+                    emisor : usuario.email,
+                    receptor : req.body.receptor,
                     idOferta : gestorBDofertas.mongo.ObjectID(oferta._id.toString()),
                     mensaje : req.body.mensaje,
                     fecha: new Date(),
@@ -64,7 +64,7 @@ module.exports = function (app, gestorBDofertas, gestorBDmensajes, gestorBDusuar
     });
 
     app.get("/api/conversaciones", function (req, res) {
-        var criterio = { $or: [{emisor: res.usuario}, {receptor : res.usuario}]};
+        var criterio = { $or: [{emisor: res.usuario.email}, {receptor : res.usuario.email}]};
         gestorBDmensajes.obtenerConversaciones(criterio, function (ofertas) {
             if (ofertas == null ) {
                 res.status(500);
@@ -90,9 +90,9 @@ module.exports = function (app, gestorBDofertas, gestorBDmensajes, gestorBDusuar
     });
 
     app.get("/api/conversacion/:id", function (req, res) {
-        var criterio = { $or: [{emisor: gestorBDusuarios.mongo.ObjectID(res.usuario._id.toString())},
-                {receptor : gestorBDusuarios.mongo.ObjectID(res.usuario._id.toString())}],
-            idOferta: gestorBDofertas.mongo.ObjectID(req.params.id.toString())};
+        var criterio = { $or: [{emisor: res.usuario.email},
+                {receptor : res.usuario.email}],
+                idOferta: gestorBDofertas.mongo.ObjectID(req.params.id.toString())};
         gestorBDmensajes.obtenerMensajes(criterio, function (mensajes) {
             if (mensajes == null ) {
                 res.status(500);

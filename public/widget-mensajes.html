@@ -6,30 +6,8 @@
 </div>
 <style>
     body {
-        font:12px arial;
         color: #222;
-        text-align:center;
-        padding:35px; }
-
-    form, p, span {
-        margin:0;
-        padding:0; }
-
-    input { font:12px arial; }
-
-    a {
-        color:#0000FF;
-        text-decoration:none; }
-
-    a:hover { text-decoration:underline; }
-
-    #widget-mensajes {
-        margin:0 auto;
-        padding-bottom:25px;
-        background:#EBF4FB;
-        width:504px;
-        border:1px solid #ACD8F0; }
-
+        text-align:center; }
 
     #chatbox {
         text-align:left;
@@ -37,24 +15,22 @@
         margin-bottom:25px;
         padding:10px;
         background:#fff;
-        height:270px;
-        width:430px;
+        height:80%;
+        width:80%;
         border:1px solid #ACD8F0;
         overflow:auto; }
 
-    #usermsg {
+    #mensajeAenviar {
         width:395px;
         border:1px solid #ACD8F0; }
 
-    #submit { width: 60px; }
+    #enviar { width: 60px; }
 
-    .msgln { margin:0 0 2px 0; }
+
 </style>
 
 <script>
     window.history.pushState("", "", "/cliente.html?w=chat");
-
-
 
     function cargar() {
         $.ajax({
@@ -99,10 +75,12 @@
     
     function cargarChat(mensajes) {
         $("#chatbox").empty();
+        mensajes = mensajes.sort(function (a, b) {
+            return a.fecha - b.fecha;
+        });
         for (let i = 0; i < mensajes.length; i++) {
             $("#chatbox").append(
-                "<div id='emisor'>"+mensajes[i].emisor+"</div>"+
-                "<div id='mensaje'>"+mensajes[i].mensaje+"</div>"
+                "<div id='mensaje'><b>"+mensajes[i].emisor+"</b>["+mensajes[i].fecha+"]: "+mensajes[i].mensaje+"</div>"
             );
         }
     }
