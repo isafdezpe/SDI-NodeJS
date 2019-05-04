@@ -5,8 +5,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import test.util.SeleniumUtils;
-
 public class PO_RegisterView  extends PO_NavView {
 	
 	static public void fillForm(WebDriver driver, String dnip, String namep, String

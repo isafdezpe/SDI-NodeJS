@@ -1,16 +1,12 @@
 package test;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 
 import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -54,35 +50,68 @@ public class InsertDataMongo {
 					.append("saldo", 100).append("rol", "standard");
 			usuarios.insertOne(usuario4);
 			Document usuario5 = new Document().append("nombre", "Gabriel").append("apellidos", "Naya")
-					.append("email", "gabrielg@email.com")
+					.append("email", "gabrieln@email.com")
 					.append("password", "6fabd6ea6f1518592b7348d84a51ce97b87e67902aa5a9f86beea34cd39a6b4a")
-					.append("saldo", 100).append("rol", "standard");
+					.append("saldo", 66).append("rol", "standard");
 			usuarios.insertOne(usuario5);
 			Document usuario6 = new Document().append("nombre", "Maria").append("apellidos", "Gonzalez")
 					.append("email", "mariag@email.com")
 					.append("password", "6fabd6ea6f1518592b7348d84a51ce97b87e67902aa5a9f86beea34cd39a6b4a")
-					.append("saldo", 100).append("rol", "standard");
+					.append("saldo", 60).append("rol", "standard");
 			usuarios.insertOne(usuario6);
 			Document usuario7 = new Document().append("nombre", "Lucas").append("apellidos", "Rodriguez")
-					.append("email", "lucasg@email.com")
+					.append("email", "lucasr@email.com")
 					.append("password", "6fabd6ea6f1518592b7348d84a51ce97b87e67902aa5a9f86beea34cd39a6b4a")
-					.append("saldo", 100).append("rol", "standard");
+					.append("saldo", 70).append("rol", "standard");
 			usuarios.insertOne(usuario7);
 			
 			// Insertar ofertas
 			MongoCollection<Document> ofertas = getMongodb().getCollection("ofertas");
+			// Ofertas de isabelf
 			ofertas.insertOne(new Document().append("nombre", "Carpeta").append("descripcion", "Carpeta de acordeón")
-					.append("precio", 5).append("autor", usuario2)
+					.append("precio", 5).append("autor", usuario2.get("_id"))
 					.append("fecha", new Date()).append("vendida", false));
 			ofertas.insertOne(new Document().append("nombre", "Altavoz").append("descripcion", "Altavoz portátil")
-					.append("precio", 15).append("autor", usuario2)
+					.append("precio", 15).append("autor", usuario2.get("_id"))
 					.append("fecha", new Date()).append("vendida", false));
+			ofertas.insertOne(new Document().append("nombre", "Lápices").append("descripcion", "Lápices de colores")
+					.append("precio", 4).append("autor", usuario2.get("_id"))
+					.append("fecha", new Date()).append("vendida", true)
+					.append("comprador", usuario5.get("_id")));
+			ofertas.insertOne(new Document().append("nombre", "CD").append("descripcion", "CD de Operación Triunfo")
+					.append("precio", 10).append("autor", usuario2.get("_id"))
+					.append("fecha", new Date()).append("vendida", true)
+					.append("comprador", usuario6.get("_id")));
+			// Ofertas de luisg
 			ofertas.insertOne(new Document().append("nombre", "Agenda").append("descripcion", "Agenda escolar 2019-2020")
-					.append("precio", 10).append("autor", usuario3)
+					.append("precio", 10).append("autor", usuario3.get("_id"))
 					.append("fecha", new Date()).append("vendida", false));
 			ofertas.insertOne(new Document().append("nombre", "Monitor").append("descripcion", "Monitor de 20 pulgadas")
-					.append("precio", 50).append("autor", usuario3)
+					.append("precio", 70).append("autor", usuario3.get("_id"))
 					.append("fecha", new Date()).append("vendida", false));
+			ofertas.insertOne(new Document().append("nombre", "Libro").append("descripcion", "El código da Vinci")
+					.append("precio", 10).append("autor", usuario3.get("_id"))
+					.append("fecha", new Date()).append("vendida", true)
+					.append("comprador", usuario7.get("_id")));
+			ofertas.insertOne(new Document().append("nombre", "Cajonera").append("descripcion", "Cajonera con 3 cajones")
+					.append("precio", 40).append("autor", usuario3.get("_id"))
+					.append("fecha", new Date()).append("vendida", true)
+					.append("comprador", usuario5.get("_id")));
+			// Ofertas de laurab
+			ofertas.insertOne(new Document().append("nombre", "Espejo").append("descripcion", "Espejo de tocador")
+					.append("precio", 50).append("autor", usuario4.get("_id"))
+					.append("fecha", new Date()).append("vendida", false));
+			ofertas.insertOne(new Document().append("nombre", "Consola").append("descripcion", "Nintendo 2DS")
+					.append("precio", 48).append("autor", usuario4.get("_id"))
+					.append("fecha", new Date()).append("vendida", false));
+			ofertas.insertOne(new Document().append("nombre", "Botas").append("descripcion", "Botas militares")
+					.append("precio", 30).append("autor", usuario4.get("_id"))
+					.append("fecha", new Date()).append("vendida", true)
+					.append("comprador", usuario6.get("_id")));
+			ofertas.insertOne(new Document().append("nombre", "Libros de ESDLA").append("descripcion", "El Hobbit y La comunidad del anillo")
+					.append("precio", 20).append("autor", usuario4.get("_id"))
+					.append("fecha", new Date()).append("vendida", true)
+					.append("comprador", usuario7.get("_id")));
 			
 			
 		} catch (Exception ex) {
