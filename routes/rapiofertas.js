@@ -5,9 +5,11 @@ module.exports = function (app, gestorBDofertas, gestorBDmensajes, gestorBDusuar
         var criterio = {"autor": {$ne: res.usuario}};
         gestorBDofertas.obtenerOfertas(criterio, function (ofertas) {
             if (ofertas == null) {
+                app.get("logger").error("Error al acceder a /api/tienda");
                 res.status(500);
                 res.json({error: "fallo al cargar"})
             } else {
+                app.get("logger").info("Acceso a /api/tienda");
                 res.status(200);
                 res.json(ofertas);
             }
@@ -19,11 +21,13 @@ module.exports = function (app, gestorBDofertas, gestorBDmensajes, gestorBDusuar
 
         gestorBDofertas.obtenerOfertas(criterio,function(ofertas){
             if ( ofertas == null ){
+                app.get("logger").error("Error al acceder a la oferta");
                 res.status(500);
                 res.json({
                     error : "se ha producido un error"
                 })
             } else {
+                app.get("logger").info("Acceso a oferta");
                 res.status(200);
                 res.send( JSON.stringify(ofertas[0]) );
             }
@@ -34,6 +38,7 @@ module.exports = function (app, gestorBDofertas, gestorBDmensajes, gestorBDusuar
         var criterio = {"_id" : gestorBDofertas.mongo.ObjectID(req.body.idOferta)}
         gestorBDofertas.obtenerOfertas(criterio, function (ofertas) {
             if (ofertas == null) {
+                app.get("logger").error("Error al obtener oferta");
                 res.status(500);
                 res.json({
                     error : "se ha producido un error"
@@ -50,11 +55,13 @@ module.exports = function (app, gestorBDofertas, gestorBDmensajes, gestorBDusuar
                 };
                 gestorBDmensajes.insertarMensaje(mensaje, function (mensajes) {
                     if (mensajes == null) {
+                        app.get("logger").error("Error al enviar mensaje");
                         res.status(500);
                         res.json({
                             error: "se ha producido un error"
                         })
                     } else {
+                        app.get("logger").info("Mensaje enviado");
                         res.status(200);
                         res.send( JSON.stringify(mensaje) );
                     }
@@ -67,6 +74,7 @@ module.exports = function (app, gestorBDofertas, gestorBDmensajes, gestorBDusuar
         var criterio = { $or: [{emisor: res.usuario.email}, {receptor : res.usuario.email}]};
         gestorBDmensajes.obtenerConversaciones(criterio, function (conversaciones) {
             if (conversaciones == null ) {
+                app.get("logger").error("Error al obtener conversaciones");
                 res.status(500);
                 res.json({
                     error : "se ha producido un error"
@@ -76,11 +84,13 @@ module.exports = function (app, gestorBDofertas, gestorBDmensajes, gestorBDusuar
                 var criterioOfertas = { "_id" : { $in : idsOfertas }}
                 gestorBDofertas.obtenerOfertas(criterioOfertas, function(ofertas) {
                     if (ofertas == null) {
+                        app.get("logger").error("Error al obtener ofertas");
                         res.status(500);
                         res.json({
                             error : "se ha producido un error"
                         })
                     } else {
+                        app.get("logger").info("Acceso a la lista de conversaciones");
                         res.status(200);
                         res.send( JSON.stringify(ofertas) );
                     }
@@ -95,11 +105,13 @@ module.exports = function (app, gestorBDofertas, gestorBDmensajes, gestorBDusuar
                 idOferta: gestorBDofertas.mongo.ObjectID(req.params.id.toString())};
         gestorBDmensajes.obtenerMensajes(criterio, function (mensajes) {
             if (mensajes == null ) {
+                app.get("logger").error("Error al obtener mensajes de la conversación");
                 res.status(500);
                 res.json({
                     error : "se ha producido un error"
                 })
             } else {
+                app.get("logger").info("Acceso a la conversación");
                 res.status(200);
                 res.send( JSON.stringify(mensajes) );
             }
