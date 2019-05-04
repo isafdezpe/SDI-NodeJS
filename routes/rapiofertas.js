@@ -65,14 +65,14 @@ module.exports = function (app, gestorBDofertas, gestorBDmensajes, gestorBDusuar
 
     app.get("/api/conversaciones", function (req, res) {
         var criterio = { $or: [{emisor: res.usuario.email}, {receptor : res.usuario.email}]};
-        gestorBDmensajes.obtenerConversaciones(criterio, function (ofertas) {
-            if (ofertas == null ) {
+        gestorBDmensajes.obtenerConversaciones(criterio, function (conversaciones) {
+            if (conversaciones == null ) {
                 res.status(500);
                 res.json({
                     error : "se ha producido un error"
                 })
             } else {
-                let idsOfertas = ofertas.map(o => o._id);
+                let idsOfertas = conversaciones.map(o => gestorBDofertas.mongo.ObjectID(o.toString()));
                 var criterioOfertas = { "_id" : { $in : idsOfertas }}
                 gestorBDofertas.obtenerOfertas(criterioOfertas, function(ofertas) {
                     if (ofertas == null) {
