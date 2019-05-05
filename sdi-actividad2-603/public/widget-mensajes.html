@@ -42,7 +42,7 @@
                 token : token
             },
             success: function(respuesta) {
-                cargarChat(respuesta);
+                cargarChat(respuesta.mensajes, respuesta.receptorActual);
             },
             error : function (error){
                 $( "#contenedor-principal" ).load("widget-login.html");
@@ -73,11 +73,13 @@
         })
     });
     
-    function cargarChat(mensajes) {
+    function cargarChat(mensajes, receptorActual) {
         $("#chatbox").empty();
         mensajes = mensajes.sort(function (a, b) {
             return a.fecha - b.fecha;
         });
+        if (receptorActual)
+            Cookies.set("destinatario", receptorActual);
         for (let i = 0; i < mensajes.length; i++) {
             $("#chatbox").append(
                 "<div id='mensaje'><b>"+mensajes[i].emisor+"</b>["+mensajes[i].fecha+"]: "+mensajes[i].mensaje+"</div>"
@@ -86,7 +88,9 @@
     }
 
     $(function () {
-        cargar();
+        setInterval(function () {
+            cargar();
+        }, 1000);
     })
     //# sourceURL=mensajes.js
 </script>

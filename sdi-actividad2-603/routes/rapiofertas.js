@@ -2,7 +2,7 @@ module.exports = function (app, gestorBDofertas, gestorBDmensajes, gestorBDusuar
 
     // Tienda
     app.get("/api/tienda", function (req, res) {
-        var criterio = {"autor": {$ne: res.usuario}};
+        var criterio = {"autor": {$ne: gestorBDusuarios.mongo.ObjectID(res.usuario._id.toString())}};
         gestorBDofertas.obtenerOfertas(criterio, function (ofertas) {
             if (ofertas == null) {
                 app.get("logger").error("Error al acceder a /api/tienda");
@@ -71,7 +71,8 @@ module.exports = function (app, gestorBDofertas, gestorBDmensajes, gestorBDusuar
     });
 
     app.get("/api/conversaciones", function (req, res) {
-        var criterio = { $or: [{emisor: res.usuario.email}, {receptor : res.usuario.email}]};
+        var criterio = { $or:  [{emisor: res.usuario.email},
+                {receptor : res.usuario.email}]};
         gestorBDmensajes.obtenerConversaciones(criterio, function (conversaciones) {
             if (conversaciones == null ) {
                 app.get("logger").error("Error al obtener conversaciones");
@@ -90,6 +91,7 @@ module.exports = function (app, gestorBDofertas, gestorBDmensajes, gestorBDusuar
                             error : "se ha producido un error"
                         })
                     } else {
+
                         app.get("logger").info("Acceso a la lista de conversaciones");
                         res.status(200);
                         res.send( JSON.stringify(ofertas) );
@@ -111,9 +113,23 @@ module.exports = function (app, gestorBDofertas, gestorBDmensajes, gestorBDusuar
                     error : "se ha producido un error"
                 })
             } else {
+                var receptorActual;
+                for (var i = 0; i < mensajes.length; i++) {
+                    if(mensajes[i].emisor !== res.usuario.email) {
+                        receptorActual = mensajes[i].emisor;
+                        break;
+                    }
+                    if (mensajes[i].receptor !== res.usuario.email) {
+                        receptorActual = mensajes[i].receptor;
+                        break;
+                    }
+                }
                 app.get("logger").info("Acceso a la conversación");
                 res.status(200);
-                res.send( JSON.stringify(mensajes) );
+                res.send( JSON.stringify( {
+                    mensajes : mensajes,
+                    receptorActual : receptorActual
+                }) );
             }
         })
     })

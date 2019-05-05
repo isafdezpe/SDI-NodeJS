@@ -61,7 +61,8 @@ module.exports = function (app, swig, gestorBDofertas, gestorBDusuarios) {
             precio : req.body.precio,
             autor : gestorBDusuarios.mongo.ObjectID(req.session.usuario._id.toString()),
             fecha : new Date(),
-            vendida : false
+            vendida : false,
+            autorEmail : req.session.usuario.email
         }
         // Conectarse
         gestorBDofertas.insertarOferta(oferta, function(id) {
@@ -94,8 +95,10 @@ module.exports = function (app, swig, gestorBDofertas, gestorBDusuarios) {
                         }else {
                             req.session.usuario.saldo -= ofertas[0].precio;
                             var user = req.session.usuario;
+                            var userID = user._id;
                             delete user._id;
                             gestorBDusuarios.actualizarUsuario(criterioUsuario, user , function (id) {
+                                user._id = userID;
                                 if (id == null) {
                                     app.get("logger").error("Error al actualizar el saldo del usuario");
                                     res.redirect("/tienda?mensaje=Error al actualizar el usuario")

@@ -35,14 +35,20 @@
     function actualizarTabla(chatsMostrar){
         $( "#tablaCuerpo" ).empty(); // Vaciar la tabla
         for (let i = 0; i < chatsMostrar.length; i++) {
+
             $( "#tablaCuerpo" ).append(
                 "<tr id=" + chatsMostrar[i]._id+">"+
                 "<td>"+chatsMostrar[i].nombre+"</td>" +
                 "<td>"+chatsMostrar[i].descripcion+"</td>" +
                 "<td>"+chatsMostrar[i].precio+"</td>" +
-                "<td><button onclick=enviarMensaje('"+chatsMostrar[i]._id+"','"+ chatsMostrar[i].autor.email+"')>Enviar mensaje</button></td>" +
+                "<td><button onclick=enviarMensaje('"+chatsMostrar[i]._id+"')>Enviar mensaje</button></td>" +
                 "</tr>");
         }
     }
     cargarChats();
+
+    function enviarMensaje(oferta) {
+        Cookies.set("idOferta",oferta)
+        $( "#contenedor-principal").load("widget-mensajes.html");
+    }
 </script>
