@@ -92,6 +92,7 @@ public class MyWallapopTests {
 			PO_NavView.clickOption(driver, "registrarse", "class", "btn btn-primary");
 			PO_RegisterView.fillForm(driver, "joseperez@email.com", "Josefo", "Perez", "77777",
 					"77778");
+			SeleniumUtils.textoPresentePagina(driver, "Registrar usuario");
 			SeleniumUtils.textoPresentePagina(driver, "Las contraseñas no coinciden");
 		}
 		
@@ -103,6 +104,7 @@ public class MyWallapopTests {
 			PO_NavView.clickOption(driver, "registrarse", "class", "btn btn-primary");
 			PO_RegisterView.fillForm(driver, "isabelf@email.com", "Isabel", "Fernandez", "123456",
 					"123456");
+			SeleniumUtils.textoPresentePagina(driver, "Registrar usuario");
 			SeleniumUtils.textoPresentePagina(driver, "El email ya existe");
 		}
 		
@@ -126,6 +128,8 @@ public class MyWallapopTests {
 			PO_NavView.clickOption(driver, "identificarse", "class", "btn btn-primary");
 			PO_LoginView.fillForm(driver, "isabelf@email.com" , "123456" );
 			SeleniumUtils.textoPresentePagina(driver, "Cerrar sesión");
+			SeleniumUtils.textoPresentePagina(driver, "Ofertas propias");
+			SeleniumUtils.textoPresentePagina(driver, "Compras");
 			SeleniumUtils.textoPresentePagina(driver, "isabelf@email.com");
 		}
 		
@@ -526,6 +530,81 @@ public class MyWallapopTests {
 			assertEquals(elementos.size(), 2);
 			SeleniumUtils.textoPresentePagina(driver, "El código da Vinci");
 			SeleniumUtils.textoPresentePagina(driver, "Libros de ESDLA");
+		}
+		
+		/**
+		 * Inicio de sesión con datos válidos.
+		 */
+		@Test
+		public void test29() {
+			PO_NavView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+			PO_LoginView.fillForm(driver, "isabelf@email.com" , "123456" );
+			List<WebElement> elementos = 
+					SeleniumUtils.EsperaCargaPagina(driver, "id", "mChats", PO_View.getTimeout());
+			elementos.get(0).click();
+			PO_LoginView.fillForm(driver, "isabelf@email.com" , "123456" );
+			SeleniumUtils.textoPresentePagina(driver, "Agenda escolar");
+		}
+		
+		/**
+		 * Inicio de sesión con datos inválidos (email existente, pero contraseña incorrecta).
+		 */
+		@Test
+		public void test30() {
+			PO_NavView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+			PO_LoginView.fillForm(driver, "isabelf@email.com" , "123456" );
+			List<WebElement> elementos = 
+					SeleniumUtils.EsperaCargaPagina(driver, "id", "mChats", PO_View.getTimeout());
+			elementos.get(0).click();
+			PO_LoginView.fillForm(driver, "isabelf@email.com" , "12" );
+			SeleniumUtils.textoPresentePagina(driver, "Usuario no encontrado");
+			SeleniumUtils.textoNoPresentePagina(driver, "Listado de ofertas");
+		}
+		
+		/**
+		 * Inicio de sesión con datos válidos (email vacío).
+		 */
+		@Test
+		public void test31_1() {
+			PO_NavView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+			PO_LoginView.fillForm(driver, "isabelf@email.com" , "123456" );
+			List<WebElement> elementos = 
+					SeleniumUtils.EsperaCargaPagina(driver, "id", "mChats", PO_View.getTimeout());
+			elementos.get(0).click();
+			PO_LoginView.fillForm(driver, "" , "123456" );
+			SeleniumUtils.textoPresentePagina(driver, "Usuario no encontrado");
+			SeleniumUtils.textoNoPresentePagina(driver, "Listado de ofertas");
+		}
+		
+		/**
+		 * Inicio de sesión con datos válidos (contraseña vacía).
+		 */
+		@Test
+		public void test31_2() {
+			PO_NavView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+			PO_LoginView.fillForm(driver, "isabelf@email.com" , "123456" );
+			List<WebElement> elementos = 
+					SeleniumUtils.EsperaCargaPagina(driver, "id", "mChats", PO_View.getTimeout());
+			elementos.get(0).click();
+			PO_LoginView.fillForm(driver, "isabelf@email.com" , "" );
+			SeleniumUtils.textoPresentePagina(driver, "Usuario no encontrado");
+		}
+		
+		/**
+		 * Mostrar el listado de ofertas disponibles y comprobar que se muestran 
+		 * todas las que existen, menos las del usuario identificado.
+		 */
+		@Test
+		public void test32() {
+			PO_NavView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+			PO_LoginView.fillForm(driver, "isabelf@email.com" , "123456" );
+			List<WebElement> elementos = 
+					SeleniumUtils.EsperaCargaPagina(driver, "id", "mChats", PO_View.getTimeout());
+			elementos.get(0).click();
+			PO_LoginView.fillForm(driver, "isabelf@email.com" , "123456" );
+			elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
+					"//tbody/tr", PO_View.getTimeout()); 	
+			assertEquals(elementos.size(), 8);
 		}
 
 }
