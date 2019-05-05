@@ -1,8 +1,6 @@
 package test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.text.ParseException;
 import java.util.List;
@@ -38,8 +36,11 @@ public class MyWallapopTests {
 	
 	//Antes de cada prueba se navega al URL home de la aplicaciónn
 		@Before
-		public void setUp(){
+		public void setUp() throws ParseException{
 			driver.navigate().to(URL);
+
+			InsertDataMongo insertDataMongo = new InsertDataMongo();
+			insertDataMongo.dataInsertion();
 		}
 
 		//Después de cada prueba se borran las cookies del navegador
@@ -51,8 +52,7 @@ public class MyWallapopTests {
 		//Antes de la primera prueba
 		@BeforeClass
 		static public void begin() throws ParseException {
-			InsertDataMongo insertDataMongo = new InsertDataMongo();
-			insertDataMongo.dataInsertion();
+			
 		}
 
 		//Al finalizar la última prueba
@@ -207,7 +207,7 @@ public class MyWallapopTests {
 			PO_NavView.clickOption(driver, "usuarios", "class", "btn btn-primary");
 			List<WebElement> elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
 				"//tbody/tr", PO_View.getTimeout());
-			assertTrue(elementos.size() == 6);
+			assertEquals(6, elementos.size());
 		}
 		
 		/**
@@ -228,7 +228,7 @@ public class MyWallapopTests {
 
 			elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
 					"//tbody/tr", PO_View.getTimeout());
-			assertTrue(elementos.size() == 5);
+			assertEquals(5, elementos.size());
 		}
 		
 
@@ -250,7 +250,7 @@ public class MyWallapopTests {
 
 			elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
 					"//tbody/tr", PO_View.getTimeout());
-			assertTrue(elementos.size() == 5);
+			assertEquals(5, elementos.size());
 		}
 		/**
 		 * Ir a la lista de usuarios, borrar tres usuario, comprobar que la lista se actualiza y dichos
@@ -274,7 +274,7 @@ public class MyWallapopTests {
 			
 			elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
 					"//tbody/tr", PO_View.getTimeout());
-			assertEquals(elementos.size(), 3);
+			assertEquals(3, elementos.size());
 		}
 		
 		/**
@@ -326,7 +326,7 @@ public class MyWallapopTests {
 			elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
 					"//tbody/tr", PO_View.getTimeout());
 			
-			assertEquals(elementos.size(), 4);
+			assertEquals(4, elementos.size());
 		}
 		
 		/**
@@ -436,7 +436,7 @@ public class MyWallapopTests {
 			List<WebElement> elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
 					"//tbody/tr", PO_View.getTimeout()); 
 			SeleniumUtils.textoPresentePagina(driver, "Libro");
-			assertEquals(elementos.size(), 2);
+			assertEquals(2, elementos.size());
 		}
 		
 		/**
@@ -527,7 +527,7 @@ public class MyWallapopTests {
 			elementos.get(0).click();
 			elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
 					"//tbody/tr", PO_View.getTimeout()); 
-			assertEquals(elementos.size(), 2);
+			assertEquals(2, elementos.size());
 			SeleniumUtils.textoPresentePagina(driver, "El código da Vinci");
 			SeleniumUtils.textoPresentePagina(driver, "Libros de ESDLA");
 		}
@@ -543,7 +543,8 @@ public class MyWallapopTests {
 					SeleniumUtils.EsperaCargaPagina(driver, "id", "mChats", PO_View.getTimeout());
 			elementos.get(0).click();
 			PO_LoginView.fillForm(driver, "isabelf@email.com" , "123456" );
-			SeleniumUtils.textoPresentePagina(driver, "Agenda escolar");
+			SeleniumUtils.esperarSegundos(driver, 1);
+			SeleniumUtils.textoPresentePagina(driver, "Listado de ofertas");
 		}
 		
 		/**
@@ -604,7 +605,102 @@ public class MyWallapopTests {
 			PO_LoginView.fillForm(driver, "isabelf@email.com" , "123456" );
 			elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
 					"//tbody/tr", PO_View.getTimeout()); 	
-			assertEquals(elementos.size(), 8);
+			assertEquals(8, elementos.size());
+			SeleniumUtils.textoPresentePagina(driver, "Agenda escolar");
+			SeleniumUtils.textoNoPresentePagina(driver, "Carpeta");
+		}
+		
+		/**
+		 * Sobre una búsqueda determinada de ofertas (a elección de desarrollador), enviar un mensaje a
+		 * una oferta concreta. Se abriría dicha conversación por primera vez. Comprobar que el mensaje aparece
+		 * en el listado de mensajes.
+		 */
+		@Test
+		public void test33() {
+			PO_NavView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+			PO_LoginView.fillForm(driver, "isabelf@email.com" , "123456" );
+			List<WebElement> elementos = 
+					SeleniumUtils.EsperaCargaPagina(driver, "id", "mChats", PO_View.getTimeout());
+			elementos.get(0).click();
+			PO_LoginView.fillForm(driver, "isabelf@email.com" , "123456" );
+			elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
+					"//tbody/tr", PO_View.getTimeout()); 
+			WebElement filtro = driver.findElement(By.id("filtro-nombre"));
+			filtro.click();
+			filtro.clear();
+			filtro.sendKeys("Agenda");
+			elementos = PO_View.checkElement(driver, "free", 
+					"//td[contains(text(), 'Agenda')]/following-sibling::*/button");
+			elementos.get(0).click();
+			WebElement mensaje = driver.findElement(By.id("mensajeAenviar"));
+			mensaje.click();
+			mensaje.clear();
+			mensaje.sendKeys("Hola, me interesa la agenda");
+			By boton = By.id("enviar");
+			driver.findElement(boton).click();
+			SeleniumUtils.esperarSegundos(driver, 2);
+			SeleniumUtils.textoPresentePagina(driver, "isabelf@email.com");
+			SeleniumUtils.textoPresentePagina(driver, "Hola, me interesa la agenda");
+		}
+		
+		/**
+		 * Sobre el listado de conversaciones enviar un mensaje a una conversación ya abierta.
+		 * Comprobar que el mensaje aparece en el listado de mensajes.
+		 */
+		@Test
+		public void test34() {
+			PO_NavView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+			PO_LoginView.fillForm(driver, "luisg@email.com" , "123456" );
+			List<WebElement> elementos = 
+					SeleniumUtils.EsperaCargaPagina(driver, "id", "mChats", PO_View.getTimeout());
+			elementos.get(0).click();
+			PO_LoginView.fillForm(driver, "luisg@email.com" , "123456" );
+			SeleniumUtils.esperarSegundos(driver, 2);
+			elementos = 
+					SeleniumUtils.EsperaCargaPagina(driver, "id", "mChats", PO_View.getTimeout());
+			elementos.get(0).click();
+			elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
+					"//tbody/tr", PO_View.getTimeout()); 
+			elementos = PO_View.checkElement(driver, "free", 
+					"//td[contains(text(), 'Monitor')]/following-sibling::*/button");
+			elementos.get(0).click();
+			SeleniumUtils.esperarSegundos(driver, 3);
+			SeleniumUtils.textoPresentePagina(driver, "isabelf@email.com");
+			SeleniumUtils.textoPresentePagina(driver, "Hola, me interesa el monitor");
+			WebElement mensaje = driver.findElement(By.id("mensajeAenviar"));
+			mensaje.click();
+			mensaje.clear();
+			mensaje.sendKeys("Hola, cuesta 70€");
+			By boton = By.id("enviar");
+			driver.findElement(boton).click();
+			SeleniumUtils.esperarSegundos(driver, 2);
+			SeleniumUtils.textoPresentePagina(driver, "isabelf@email.com");
+			SeleniumUtils.textoPresentePagina(driver, "Hola, me interesa el monitor");
+			SeleniumUtils.textoPresentePagina(driver, "luisg@email.com");
+			SeleniumUtils.textoPresentePagina(driver, "Hola, cuesta 70€");
+		}
+		
+		/**
+		 * Mostrar el listado de conversaciones ya abiertas. Comprobar que el listado contiene las
+		 * conversaciones que deben ser.
+		 */
+		@Test
+		public void test35() {
+			PO_NavView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+			PO_LoginView.fillForm(driver, "luisg@email.com" , "123456" );
+			List<WebElement> elementos = 
+					SeleniumUtils.EsperaCargaPagina(driver, "id", "mChats", PO_View.getTimeout());
+			elementos.get(0).click();
+			PO_LoginView.fillForm(driver, "luisg@email.com" , "123456" );
+			SeleniumUtils.esperarSegundos(driver, 2);
+			elementos = 
+					SeleniumUtils.EsperaCargaPagina(driver, "id", "mChats", PO_View.getTimeout());
+			elementos.get(0).click();
+			elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
+					"//tbody/tr", PO_View.getTimeout()); 
+			assertEquals(2, elementos.size());
+			SeleniumUtils.textoPresentePagina(driver, "Monitor");
+			SeleniumUtils.textoPresentePagina(driver, "Carpeta");
 		}
 
 }

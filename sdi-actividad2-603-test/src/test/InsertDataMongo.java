@@ -68,51 +68,73 @@ public class InsertDataMongo {
 			// Insertar ofertas
 			MongoCollection<Document> ofertas = getMongodb().getCollection("ofertas");
 			// Ofertas de isabelf
-			ofertas.insertOne(new Document().append("nombre", "Carpeta").append("descripcion", "Carpeta de acordeón")
+			Document ofertaCarpeta = new Document().append("nombre", "Carpeta").append("descripcion", "Carpeta de acordeón")
 					.append("precio", 5).append("autor", usuario2.get("_id"))
-					.append("fecha", new Date()).append("vendida", false));
+					.append("fecha", new Date()).append("vendida", false)
+					.append("autorEmail", "isabelf@email.com");
+			ofertas.insertOne(ofertaCarpeta);
 			ofertas.insertOne(new Document().append("nombre", "Altavoz").append("descripcion", "Altavoz portátil")
 					.append("precio", 15).append("autor", usuario2.get("_id"))
-					.append("fecha", new Date()).append("vendida", false));
+					.append("fecha", new Date()).append("vendida", false)
+					.append("autorEmail", "isabelf@email.com"));
 			ofertas.insertOne(new Document().append("nombre", "Lápices").append("descripcion", "Lápices de colores")
 					.append("precio", 4).append("autor", usuario2.get("_id"))
 					.append("fecha", new Date()).append("vendida", true)
-					.append("comprador", usuario5.get("_id")));
+					.append("comprador", usuario5.get("_id"))
+					.append("autorEmail", "isabelf@email.com"));
 			ofertas.insertOne(new Document().append("nombre", "CD").append("descripcion", "CD de Operación Triunfo")
 					.append("precio", 10).append("autor", usuario2.get("_id"))
 					.append("fecha", new Date()).append("vendida", true)
-					.append("comprador", usuario6.get("_id")));
+					.append("comprador", usuario6.get("_id"))
+					.append("autorEmail", "isabelf@email.com"));
 			// Ofertas de luisg
 			ofertas.insertOne(new Document().append("nombre", "Agenda").append("descripcion", "Agenda escolar 2019-2020")
 					.append("precio", 10).append("autor", usuario3.get("_id"))
-					.append("fecha", new Date()).append("vendida", false));
-			ofertas.insertOne(new Document().append("nombre", "Monitor").append("descripcion", "Monitor de 20 pulgadas")
+					.append("fecha", new Date()).append("vendida", false)
+					.append("autorEmail", "luisg@email.com"));
+			Document ofertaMonitor = new Document().append("nombre", "Monitor").append("descripcion", "Monitor de 20 pulgadas")
 					.append("precio", 70).append("autor", usuario3.get("_id"))
-					.append("fecha", new Date()).append("vendida", false));
+					.append("fecha", new Date()).append("vendida", false)
+					.append("autorEmail", "luisg@email.com");
+			ofertas.insertOne(ofertaMonitor);
 			ofertas.insertOne(new Document().append("nombre", "Libro").append("descripcion", "El código da Vinci")
 					.append("precio", 10).append("autor", usuario3.get("_id"))
 					.append("fecha", new Date()).append("vendida", true)
-					.append("comprador", usuario7.get("_id")));
+					.append("comprador", usuario7.get("_id"))
+					.append("autorEmail", "luisg@email.com"));
 			ofertas.insertOne(new Document().append("nombre", "Cajonera").append("descripcion", "Cajonera con 3 cajones")
 					.append("precio", 40).append("autor", usuario3.get("_id"))
 					.append("fecha", new Date()).append("vendida", true)
-					.append("comprador", usuario5.get("_id")));
+					.append("comprador", usuario5.get("_id"))
+					.append("autorEmail", "luisg@email.com"));
 			// Ofertas de laurab
 			ofertas.insertOne(new Document().append("nombre", "Espejo").append("descripcion", "Espejo de tocador")
 					.append("precio", 50).append("autor", usuario4.get("_id"))
-					.append("fecha", new Date()).append("vendida", false));
+					.append("fecha", new Date()).append("vendida", false)
+					.append("autorEmail", "laurab@email.com"));
 			ofertas.insertOne(new Document().append("nombre", "Consola").append("descripcion", "Nintendo 2DS")
 					.append("precio", 48).append("autor", usuario4.get("_id"))
-					.append("fecha", new Date()).append("vendida", false));
+					.append("fecha", new Date()).append("vendida", false)
+					.append("autorEmail", "laurab@email.com"));
 			ofertas.insertOne(new Document().append("nombre", "Botas").append("descripcion", "Botas militares")
 					.append("precio", 30).append("autor", usuario4.get("_id"))
 					.append("fecha", new Date()).append("vendida", true)
-					.append("comprador", usuario6.get("_id")));
+					.append("comprador", usuario6.get("_id"))
+					.append("autorEmail", "laurab@email.com"));
 			ofertas.insertOne(new Document().append("nombre", "Libros de ESDLA").append("descripcion", "El Hobbit y La comunidad del anillo")
 					.append("precio", 20).append("autor", usuario4.get("_id"))
 					.append("fecha", new Date()).append("vendida", true)
-					.append("comprador", usuario7.get("_id")));
+					.append("comprador", usuario7.get("_id"))
+					.append("autorEmail", "laurab@email.com"));
 			
+			// Insertar mensajes
+			MongoCollection<Document> mensajes = getMongodb().getCollection("mensajes");
+			mensajes.insertOne(new Document().append("emisor", "isabelf@email.com")
+					.append("receptor", "luisg@email.com").append("idOferta", ofertaMonitor.get("_id"))
+					.append("mensaje", "Hola, me interesa el monitor").append("fecha", new Date()));
+			mensajes.insertOne(new Document().append("emisor", "luisg@email.com")
+					.append("receptor", "isabelf@email.com").append("idOferta", ofertaCarpeta.get("_id"))
+					.append("mensaje", "hola").append("fecha", new Date()));
 			
 		} catch (Exception ex) {
 			System.out.print(ex.toString());
